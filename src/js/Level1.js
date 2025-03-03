@@ -1,0 +1,188 @@
+class Level1 extends Phaser.Scene {
+    constructor() {
+        super({ key: 'Scene1' });
+        this.platforms = null;
+        this.player = null;
+        this.cursors = null;
+        this.stars = null;
+        this.score = 0;
+        this.scoreText = null;
+        this.bombs = null;
+    }
+
+
+    // Metodos principales de la escena:
+
+    // Metodo para cargar todos los assets y guardarlos en forma clave-valor
+    preload() {
+        this.load.image('sky', '../../assets/sky.png');
+        this.load.image('ground', '../../assets/platform.png');
+        this.load.image('star', '../../assets/star.png');
+        this.load.image('bomb', '../../assets/bomb.png');
+        this.load.spritesheet('dude',
+            '../../assets/dude.png',
+            { frameWidth: 32, frameHeight: 48 }
+        );
+    }
+
+    // Metodo que se llama cuando se crea la escena y la renderiza
+    create() {
+        this._createWorld();
+        this._cretatePlatforms();
+        this._createPlayer();
+        this._createStars();
+        this._createScoreText();
+        this._createAnimations();
+        this._createCursors();
+        this._createBombs();
+        this._createColliders();
+    }
+
+    // Metodo que se llama cada que se refresca la pantalla
+    update() {
+        this._handlePlayerMov();
+    }
+
+    // Metodos auxiliares de la escena
+
+    _createWorld() {
+        this.add.image(400, 300, 'sky');
+    }
+
+    _cretatePlatforms() {
+        // Se le asigna a las plataformas un grupo estatico (No se mueven ni afecta la gravedad
+        // pero interactuan con demas objetos);
+        this.platforms = this.physics.add.staticGroup();
+
+        // Se crea en el x = 600, y = 400, se escala para que sea mas grande y siempre que se 
+        // escale se debe de usar el refreshBody para que su colision se actualice
+        this.platforms.create(400, 568, 'ground').setScale(2).refreshBody();
+
+        this.platforms.create(600, 400, 'ground');
+        this.platforms.create(50, 250, 'ground');
+        this.platforms.create(750, 220, 'ground');
+
+    }
+
+    _createPlayer() {
+        // Creacion del jugador
+        this.player = this.physics.add.sprite(100, 450, 'dude');
+        this.player.setBounce(0.2);
+        this.player.setCollideWorldBounds(true);
+    }
+
+    _createStars() {
+        // Grupo estrellas
+        this.stars = this.physics.add.group({
+            key: 'star',
+            repeat: 11,
+            setXY: { x: 12, y: 0, stepX: 70 }
+        });
+
+        this.stars.children.iterate(function (child) {
+
+            child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+        });
+    }
+
+    _createScoreText() {
+        // Texto
+        this.scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+    }
+
+
+    _createBombs() {
+        // Grupo de las bombas
+        this.bombs = this.physics.add.group();
+    }
+
+    _createAnimations() {
+        this.anims.create({
+            key: 'left',
+            frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
+            frameRate: 10,
+            repeat: -1,
+        });
+
+        this.anims.create({
+            key: 'turn',
+            frames: [{ key: 'dude', frame: 4 }],
+            frameRate: 20
+        });
+
+        this.anims.create({
+            key: 'right',
+            frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
+            frameRate: 10,
+            repeat: -1
+        });
+    }
+
+    _createColliders() {
+        this.physics.add.collider(this.player, this.platforms);
+        this.physics.add.collider(this.stars, this.platforms);
+        this.physics.add.collider(this.bombs, this.platforms);
+        this.physics.add.collider(this.player, this.bombs, this._hitBomb, null, this);
+        this.physics.add.overlap(this.player, this.stars, this._collectStar, null, this);
+    }
+
+    _createCursors() {
+        // Crear el objeto cursor, el cual contiene ya el manager del teclado
+        // con 4 eventos: up, down, right y left
+        this.cursors = this.input.keyboard.createCursorKeys();
+    }
+
+    _collectStar(player, star) {
+        star.disableBody(true, true);
+
+        this.score += 10;
+        this.scoreText.setText('Score: ' + this.score);
+
+        if (this.stars.countActive(true) === 0) {
+            this.stars.children.iterate(function (child) {
+
+                child.enableBody(true, child.x, 0, true, true);
+
+            });
+
+            var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+
+            var bomb = this.bombs.create(x, 16, 'bomb');
+            bomb.setBounce(1);
+            bomb.setCollideWorldBounds(true);
+            bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
+
+        }
+    }
+
+    _hitBomb(player, bomb) {
+        this.physics.pause();
+        player.setTint(0xff0000);
+        player.anims.play('turn');
+        this.gameOver = true;
+    }
+
+    _handlePlayerMov() {
+        if (this.cursors.left.isDown) {
+            this.player.setVelocityX(-160);
+
+            this.player.anims.play('left', true);
+        }
+        else if (this.cursors.right.isDown) {
+            this.player.setVelocityX(160);
+
+            this.player.anims.play('right', true);
+        }
+        else {
+            this.player.setVelocityX(0);
+
+            this.player.anims.play('turn');
+        }
+
+        if (this.cursors.up.isDown && this.player.body.touching.down) {
+            this.player.setVelocityY(-330);
+        }
+        console.log("HOla");
+    }
+}
+
