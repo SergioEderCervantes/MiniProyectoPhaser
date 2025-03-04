@@ -23,6 +23,10 @@ class Level1 extends Phaser.Scene {
             '../../assets/dude.png',
             { frameWidth: 32, frameHeight: 48 }
         );
+        this.load.spritesheet('enemy',
+            '../../assets/enemy.png',
+            { frameWidth: 32, frameHeight: 48}
+        );
     }
 
     // Metodo que se llama cuando se crea la escena y la renderiza
@@ -32,15 +36,22 @@ class Level1 extends Phaser.Scene {
         this._createPlayer();
         this._createStars();
         this._createScoreText();
-        this._createAnimations();
         this._createCursors();
         this._createBombs();
         this._createColliders();
+
+        // Creacion de un enemigo
+        // TODO: meter todo en los metodos debidos, no lo hago ahorita porque solo estoy metiendo un enemy, 
+        // Se requiere que sean un grupo de enemys y aparte setear su spawn y puntos de spawn
+        this.enemy = new Enemy(this, 0,450, this.player);
+        this.physics.add.collider(this.enemy, this.platforms);
+        this.physics.add.collider(this.player, this.enemy, this._hitEnemy, null, this);
     }
 
     // Metodo que se llama cada que se refresca la pantalla
     update() {
-        this._handlePlayerMov();
+        this.player.handleMov(this.cursors);
+        this.enemy.handleMov();
     }
 
     // Metodos auxiliares de la escena
@@ -65,10 +76,7 @@ class Level1 extends Phaser.Scene {
     }
 
     _createPlayer() {
-        // Creacion del jugador
-        this.player = this.physics.add.sprite(100, 450, 'dude');
-        this.player.setBounce(0.2);
-        this.player.setCollideWorldBounds(true);
+        this.player = new Player(this,100,450);
     }
 
     _createStars() {
@@ -96,27 +104,6 @@ class Level1 extends Phaser.Scene {
         this.bombs = this.physics.add.group();
     }
 
-    _createAnimations() {
-        this.anims.create({
-            key: 'left',
-            frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
-            frameRate: 10,
-            repeat: -1,
-        });
-
-        this.anims.create({
-            key: 'turn',
-            frames: [{ key: 'dude', frame: 4 }],
-            frameRate: 20
-        });
-
-        this.anims.create({
-            key: 'right',
-            frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
-            frameRate: 10,
-            repeat: -1
-        });
-    }
 
     _createColliders() {
         this.physics.add.collider(this.player, this.platforms);
@@ -162,27 +149,14 @@ class Level1 extends Phaser.Scene {
         this.gameOver = true;
     }
 
-    _handlePlayerMov() {
-        if (this.cursors.left.isDown) {
-            this.player.setVelocityX(-160);
 
-            this.player.anims.play('left', true);
-        }
-        else if (this.cursors.right.isDown) {
-            this.player.setVelocityX(160);
-
-            this.player.anims.play('right', true);
-        }
-        else {
-            this.player.setVelocityX(0);
-
-            this.player.anims.play('turn');
-        }
-
-        if (this.cursors.up.isDown && this.player.body.touching.down) {
-            this.player.setVelocityY(-330);
-        }
-        console.log("HOla");
+    _hitEnemy(player, enemy) {
+        this.physics.pause();
+        player.setTint(0xff0000);
+        // TODO: usar el metodo de player y enemy en vez de acceder a las animaciones desde aqui
+        player.anims.play('turn');
+        enemy.anims.play('enemy_turn');
+        this.gameOver = true;
     }
 }
 
