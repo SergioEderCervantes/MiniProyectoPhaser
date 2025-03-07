@@ -45,7 +45,9 @@ class Enemy extends AbsCharacter {
         } else {    
             this._movRight();
         }
-        if (Math.random() < 0.01) { // 0.01% probability
+        // Jump mechanics 
+        const playerY = this.playerTarget.y;
+        if (playerY < this.y && this.body.touching.down && Math.random() < 0.01){
             this._jump();
         }
     }
