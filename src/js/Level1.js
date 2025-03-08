@@ -8,6 +8,7 @@ class Level1 extends Phaser.Scene {
         this.score = 0;
         this.scoreText = null;
         this.bombs = null;
+        this.gameOver = false;
     }
 
 
@@ -34,22 +35,18 @@ class Level1 extends Phaser.Scene {
         this._createWorld();
         this._cretatePlatforms();
         this._createPlayer();
+        this._createEnemy();
         this._createStars();
         this._createScoreText();
         this._createCursors();
         this._createBombs();
         this._createColliders();
 
-        // Creacion de un enemigo
-        // TODO: meter todo en los metodos debidos, no lo hago ahorita porque solo estoy metiendo un enemy, 
-        // Se requiere que sean un grupo de enemys y aparte setear su spawn y puntos de spawn
-        this.enemy = new Enemy(this, 0,450, this.player);
-        this.physics.add.collider(this.enemy, this.platforms);
-        this.physics.add.collider(this.player, this.enemy, this._hitEnemy, null, this);
     }
 
     // Metodo que se llama cada que se refresca la pantalla
     update() {
+        if (this.gameOver) return;
         this.player.handleMov(this.cursors);
         this.enemy.handleMov();
     }
@@ -77,6 +74,11 @@ class Level1 extends Phaser.Scene {
 
     _createPlayer() {
         this.player = new Player(this,100,450);
+    }
+
+    _createEnemy() {
+        // Se requiere que sean un grupo de enemys y aparte setear su spawn y puntos de spawn
+        this.enemy = new Enemy(this,450,450, this.player);
     }
 
     _createStars() {
@@ -111,12 +113,23 @@ class Level1 extends Phaser.Scene {
         this.physics.add.collider(this.bombs, this.platforms);
         this.physics.add.collider(this.player, this.bombs, this._hitBomb, null, this);
         this.physics.add.overlap(this.player, this.stars, this._collectStar, null, this);
+        this.physics.add.collider(this.enemy, this.platforms);
+        this.physics.add.collider(this.player, this.enemy, this._hitPlayer, null, this);
+        this.physics.add.overlap(this.player.attacks, this.enemy, this._hitEnemy, null, this);
     }
 
     _createCursors() {
         // Crear el objeto cursor, el cual contiene ya el manager del teclado
         // con 4 eventos: up, down, right y left
-        this.cursors = this.input.keyboard.createCursorKeys();
+        this.cursors = this.input.keyboard.addKeys({
+            up: Phaser.Input.Keyboard.KeyCodes.W,
+            left: Phaser.Input.Keyboard.KeyCodes.A,
+            right: Phaser.Input.Keyboard.KeyCodes.D,
+            down: Phaser.Input.Keyboard.KeyCodes.S,
+            attack_left: Phaser.Input.Keyboard.KeyCodes.LEFT,
+            attack_right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
+            attack_up: Phaser.Input.Keyboard.KeyCodes.UP
+        });
     }
 
     _collectStar(player, star) {
@@ -145,18 +158,23 @@ class Level1 extends Phaser.Scene {
     _hitBomb(player, bomb) {
         this.physics.pause();
         player.setTint(0xff0000);
-        player.anims.play('turn');
+        player._stop();
         this.gameOver = true;
     }
 
 
-    _hitEnemy(player, enemy) {
+    _hitPlayer(player, enemy) {
         this.physics.pause();
         player.setTint(0xff0000);
         // TODO: usar el metodo de player y enemy en vez de acceder a las animaciones desde aqui
-        player.anims.play('turn');
-        enemy.anims.play('enemy_turn');
+        player._stop();
+        enemy._stop();
         this.gameOver = true;
+    }
+
+    // WARNING: PORQUE CHINGADOS AQUI ME LO TOMA EN ORDEN INVERSO?????????
+    _hitEnemy(enemy, attack){
+        enemy.disableBody(true, true);
     }
 }
 
