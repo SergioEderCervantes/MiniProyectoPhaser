@@ -3,12 +3,14 @@ class Level1 extends Phaser.Scene {
         super({ key: 'Scene1' });
         this.platforms = null;
         this.player = null;
+        this.enemys = null;
         this.cursors = null;
         this.stars = null;
         this.score = 0;
         this.scoreText = null;
         this.bombs = null;
         this.gameOver = false;
+        this.isPaused = false;
     }
 
 
@@ -26,7 +28,7 @@ class Level1 extends Phaser.Scene {
         );
         this.load.spritesheet('enemy',
             '../../assets/enemy.png',
-            { frameWidth: 32, frameHeight: 48}
+            { frameWidth: 32, frameHeight: 48 }
         );
     }
 
@@ -35,10 +37,11 @@ class Level1 extends Phaser.Scene {
         this._createWorld();
         this._cretatePlatforms();
         this._createPlayer();
-        this._createEnemy();
+        this._createEnemys();
         this._createStars();
         this._createScoreText();
         this._createCursors();
+        // TODO si ya no vamos a querer bombas, eliminarlas totalmente del codigo
         this._createBombs();
         this._createColliders();
 
@@ -48,7 +51,7 @@ class Level1 extends Phaser.Scene {
     update() {
         if (this.gameOver) return;
         this.player.handleMov(this.cursors);
-        this.enemy.handleMov();
+        this.enemys.children.iterate(enemy => enemy.handleMov());
     }
 
     // Metodos auxiliares de la escena
@@ -73,26 +76,32 @@ class Level1 extends Phaser.Scene {
     }
 
     _createPlayer() {
-        this.player = new Player(this,100,450);
+        this.player = new Player(this, 100, 450);
     }
 
-    _createEnemy() {
+    _createEnemys() {
         // Se requiere que sean un grupo de enemys y aparte setear su spawn y puntos de spawn
-        this.enemy = new Enemy(this,450,450, this.player);
+        this.enemys = this.physics.add.group();
+        // Creacion periodica de enemigos cada 3 segundos (cambiar si es necesario):
+        const spawnPoints = [
+            { x: 784, y: 180 },
+            { x: 784, y: 360 },
+            { x: 16, y: 210 },
+            { x: 784, y: 512 }
+        ]
+        this.time.addEvent({
+            delay: 3000,
+            callback: () => {
+                let spw = spawnPoints[Math.floor(Math.random() * 4)];
+                this.enemys.add(new Enemy(this, spw.x, spw.y, this.player))
+            },
+            loop: true,
+        });
     }
 
     _createStars() {
         // Grupo estrellas
-        this.stars = this.physics.add.group({
-            key: 'star',
-            repeat: 11,
-            setXY: { x: 12, y: 0, stepX: 70 }
-        });
-
-        this.stars.children.iterate(function (child) {
-
-            child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-        });
+        this.stars = this.physics.add.group();
     }
 
     _createScoreText() {
@@ -113,9 +122,9 @@ class Level1 extends Phaser.Scene {
         this.physics.add.collider(this.bombs, this.platforms);
         this.physics.add.collider(this.player, this.bombs, this._hitBomb, null, this);
         this.physics.add.overlap(this.player, this.stars, this._collectStar, null, this);
-        this.physics.add.collider(this.enemy, this.platforms);
-        this.physics.add.collider(this.player, this.enemy, this._hitPlayer, null, this);
-        this.physics.add.overlap(this.player.attacks, this.enemy, this._hitEnemy, null, this);
+        this.physics.add.collider(this.enemys, this.platforms);
+        this.physics.add.collider(this.player, this.enemys, this._hitPlayer, null, this);
+        this.physics.add.overlap(this.player.attacks, this.enemys, this._hitEnemy, null, this);
     }
 
     _createCursors() {
@@ -128,7 +137,14 @@ class Level1 extends Phaser.Scene {
             down: Phaser.Input.Keyboard.KeyCodes.S,
             attack_left: Phaser.Input.Keyboard.KeyCodes.LEFT,
             attack_right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
-            attack_up: Phaser.Input.Keyboard.KeyCodes.UP
+            attack_up: Phaser.Input.Keyboard.KeyCodes.UP,
+            scape: Phaser.Input.Keyboard.KeyCodes.ESC
+        });
+        this.cursors.scape.on("down", () => {
+            // TODO: manejar bien las pausas (con un menu o idk)
+            if (this.isPaused) this.physics.resume();
+            else this.physics.pause();
+            this.isPaused = !this.isPaused;
         });
     }
 
@@ -137,43 +153,39 @@ class Level1 extends Phaser.Scene {
 
         this.score += 10;
         this.scoreText.setText('Score: ' + this.score);
-
-        if (this.stars.countActive(true) === 0) {
-            this.stars.children.iterate(function (child) {
-
-                child.enableBody(true, child.x, 0, true, true);
-
-            });
-
-            var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
-
-            var bomb = this.bombs.create(x, 16, 'bomb');
-            bomb.setBounce(1);
-            bomb.setCollideWorldBounds(true);
-            bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
-
-        }
+        star.destroy();
     }
 
     _hitBomb(player, bomb) {
-        this.physics.pause();
         player.setTint(0xff0000);
         player._stop();
-        this.gameOver = true;
+        this._onGameOver();
     }
 
 
     _hitPlayer(player, enemy) {
-        this.physics.pause();
         player.setTint(0xff0000);
         player._stop();
         enemy._stop();
-        this.gameOver = true;
+        this._onGameOver();
     }
 
     // WARNING: PORQUE CHINGADOS AQUI ME LO TOMA EN ORDEN INVERSO?????????
-    _hitEnemy(enemy, attack){
+    // CREO QUE MAGICAMENTE SE ARREGLO NMMS
+    _hitEnemy(attack, enemy) {
         enemy.disableBody(true, true);
+        // Crear una estrella nueva
+        const star = this.physics.add.sprite(enemy.x, enemy.y, 'star');
+        this.stars.add(star);
+        star.setBounce(1);
+        enemy.destroy();
+    }
+
+
+    _onGameOver(){
+        this.physics.pause();
+        this.time.removeAllEvents();
+        this.gameOver = true;
     }
 }
 
