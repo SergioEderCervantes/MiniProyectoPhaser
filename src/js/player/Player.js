@@ -9,6 +9,7 @@ class Player extends AbsCharacter {
         this.attacks = this.scene.physics.add.group();
         this.attackDir = '';
         this._createAnimations();
+
     }
 
     _createAnimations() {
@@ -35,18 +36,22 @@ class Player extends AbsCharacter {
     }
     handleMov(cursors) {
         const { left, right, up, attack_left, attack_right, attack_up } = cursors;
+        const prevX = this.x;
+        const prevY = this.y;
 
-       
         if (left.isDown) {
             this._movLeft();
         } else
-        if (right.isDown) {
-            this._movRight();
-        } else  this._stop();
+            if (right.isDown) {
+                this._movRight();
+            } else this._stop();
         if (up.isDown && this.body.touching.down) {
             this._jump();
-        } 
-
+        }
+        // Mover el ataque siguiendo al jugador
+        if (this.isAttacking) {
+            this._movAttack();
+        }
         if (attack_left.isDown) {
             this._attack('left');
         } else if (attack_right.isDown) {
@@ -54,8 +59,15 @@ class Player extends AbsCharacter {
         } else if (attack_up.isDown) {
             this._attack('up');
         }
-        // TODO: maybe hace falta si hacer que el ataque siga al player, dependiendo de que tanto delay tenga
     }
+
+    _movAttack() {
+        this.attacks.children.iterate(child => {
+            child.setVelocityX(this.body.velocity.x);
+            child.setVelocityY(this.body.velocity.y);
+        })
+    }
+
 
     _attack(direction) {
         if (this.isAttacking) return;
@@ -79,25 +91,29 @@ class Player extends AbsCharacter {
                 { x: this.x + 20, y: this.y - 28, width: 8, height: 24 }
             ]
         };
-    
+
         // Creacion de la hitbox del ataque
         const hitbox = hitboxConfig[direction].map(config => {
             const box = this.scene.physics.add.sprite(config.x, config.y, null).setSize(config.width, config.height);
             box.setVisible(false);
             return box;
         });
-        
+
         this.attacks.addMultiple(hitbox);
         hitbox.forEach((e) => {
             // no se porque lo tuve que poner aca, en el map no sirve 
             e.body.setAllowGravity(false);
-        })  
-    
+        })
+
+        // Dependiendo de como se de la animacion de ataque y balanceo, se debe de cambiar estos dos timers
         // Tiempo que dura el ataque en milisegundos, despues de dichos, se destruye el ataque y se resetean atributos
         this.scene.time.delayedCall(300, () => {
             hitbox.forEach(e => e.destroy());
-            this.isAttacking = false;
             this.attackDir = '';
+        });
+        // Tiempo hasta que se puede volver a atacar, se calcula como: este timer - timer anterior (por ejemplo: 1000 - 300 = 700 mSeg)
+        this.scene.time.delayedCall(1000, () => {
+            this.isAttacking = false;
         });
     }
 }

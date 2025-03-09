@@ -166,7 +166,6 @@ class Level1 extends Phaser.Scene {
     _hitPlayer(player, enemy) {
         this.physics.pause();
         player.setTint(0xff0000);
-        // TODO: usar el metodo de player y enemy en vez de acceder a las animaciones desde aqui
         player._stop();
         enemy._stop();
         this.gameOver = true;
