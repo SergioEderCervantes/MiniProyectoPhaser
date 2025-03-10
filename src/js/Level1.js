@@ -1,6 +1,6 @@
 class Level1 extends Phaser.Scene {
-    constructor() {
-        super({ key: 'Scene1' });
+    constructor(key) {
+        super({ key: key});
         this.platforms = null;
         this.player = null;
         this.enemys = null;
@@ -18,7 +18,7 @@ class Level1 extends Phaser.Scene {
 
     // Metodo para cargar todos los assets y guardarlos en forma clave-valor
     preload() {
-        this.load.image('gray_forest', '../../assets/gray_forest.jpg');
+        this.load.image('forest', '../../assets/forest.jpg');
         this.load.image('ground', '../../assets/platform.png');
         this.load.image('star', '../../assets/star.png');
         this.load.image('bomb', '../../assets/bomb.png');
@@ -55,6 +55,10 @@ class Level1 extends Phaser.Scene {
         if (this.gameOver) return;
         this.player.handleMov(this.cursors);
         this.enemys.children.iterate(enemy => enemy.handleMov());
+
+        if (this.score === 50) {
+            this.scene.start('Level2');
+        }
     }
 
     // Metodos auxiliares de la escena
@@ -64,8 +68,8 @@ class Level1 extends Phaser.Scene {
         this.ground.create(400, 810, 'ground').setScale(10).refreshBody();
     }
     _createWorld() {
-        this.add.image(1590, 320, 'gray_forest');
-        this.add.image(240, 320, 'gray_forest');
+        this.add.image(1590, 320, 'forest');
+        this.add.image(240, 320, 'forest');
     }
 
     _cretatePlatforms() {
@@ -168,8 +172,8 @@ class Level1 extends Phaser.Scene {
 
     _createCamera() {
         // Se setea la camara principal para que siga al jugador y marca los limites del mapa en la camara
-        this.cameras.main.setBounds(0, 0, 2610, 600);
-        this.cameras.main.startFollow(this.player, true, 1, 0);
+        this.cameras.main.setBounds(0, 0, 2610, window.innerHeight.toFixed(0));
+        this.cameras.main.startFollow(this.player, true, 1, 1);
     }
 
     _collectStar(player, star) {
