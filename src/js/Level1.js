@@ -42,10 +42,10 @@ class Level1 extends Phaser.Scene {
         this._createStars();
         this._createScoreText();
         this._createCursors();
-         this._createColliders();
         this._createCamera();
         // TODO si ya no vamos a querer bombas, eliminarlas totalmente del codigo
         this._createBombs();
+        this._createColliders();
       
 
     }
@@ -71,11 +71,11 @@ class Level1 extends Phaser.Scene {
     _cretatePlatforms() {
         // Se le asigna a las plataformas un grupo estatico (No se mueven ni afecta la gravedad
         // pero interactuan con demas objetos);
-        this.platforms = this.physics.add.staticGroup();
+        
 
         // Se crea en el x = 600, y = 400, se escala para que sea mas grande y siempre que se 
         // escale se debe de usar el refreshBody para que su colision se actualice
-
+        this.platforms = this.physics.add.staticGroup();
         this.platforms.create(600, 400, 'ground');
         this.platforms.create(50, 250, 'ground');
         this.platforms.create(750, 220, 'ground');
