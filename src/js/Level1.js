@@ -18,7 +18,7 @@ class Level1 extends Phaser.Scene {
 
     // Metodo para cargar todos los assets y guardarlos en forma clave-valor
     preload() {
-        this.load.image('sky', '../../assets/sky.png');
+        this.load.image('gray_forest', '../../assets/gray_forest.jpg');
         this.load.image('ground', '../../assets/platform.png');
         this.load.image('star', '../../assets/star.png');
         this.load.image('bomb', '../../assets/bomb.png');
@@ -34,6 +34,7 @@ class Level1 extends Phaser.Scene {
 
     // Metodo que se llama cuando se crea la escena y la renderiza
     create() {
+        this._createGround();
         this._createWorld();
         this._cretatePlatforms();
         this._createPlayer();
@@ -41,9 +42,11 @@ class Level1 extends Phaser.Scene {
         this._createStars();
         this._createScoreText();
         this._createCursors();
+         this._createColliders();
+        this._createCamera();
         // TODO si ya no vamos a querer bombas, eliminarlas totalmente del codigo
         this._createBombs();
-        this._createColliders();
+      
 
     }
 
@@ -56,8 +59,13 @@ class Level1 extends Phaser.Scene {
 
     // Metodos auxiliares de la escena
 
+    _createGround() {
+        this.ground = this.physics.add.staticGroup();
+        this.ground.create(400, 810, 'ground').setScale(10).refreshBody();
+    }
     _createWorld() {
-        this.add.image(400, 300, 'sky');
+        this.add.image(1590, 320, 'gray_forest');
+        this.add.image(240, 320, 'gray_forest');
     }
 
     _cretatePlatforms() {
@@ -67,16 +75,22 @@ class Level1 extends Phaser.Scene {
 
         // Se crea en el x = 600, y = 400, se escala para que sea mas grande y siempre que se 
         // escale se debe de usar el refreshBody para que su colision se actualice
-        this.platforms.create(400, 568, 'ground').setScale(2).refreshBody();
 
         this.platforms.create(600, 400, 'ground');
         this.platforms.create(50, 250, 'ground');
         this.platforms.create(750, 220, 'ground');
+        this.platforms.create(100, 500, 'ground');
+        this.platforms.create(2000, 200, 'ground');
+        this.platforms.create(1800, 460, 'ground');
+        this.platforms.create(1500, 300, 'ground');
+        this.platforms.create(1200, 100, 'ground');
+        this.platforms.create(1170, 490, 'ground');
+        
 
     }
 
     _createPlayer() {
-        this.player = new Player(this, 100, 450);
+        this.player = new Player(this, 100, 625);
     }
 
     _createEnemys() {
@@ -117,11 +131,15 @@ class Level1 extends Phaser.Scene {
 
 
     _createColliders() {
+        this.physics.add.collider(this.player, this.ground);
         this.physics.add.collider(this.player, this.platforms);
+        this.physics.add.collider(this.stars, this.ground);
         this.physics.add.collider(this.stars, this.platforms);
+        this.physics.add.collider(this.bombs, this.ground);
         this.physics.add.collider(this.bombs, this.platforms);
         this.physics.add.collider(this.player, this.bombs, this._hitBomb, null, this);
         this.physics.add.overlap(this.player, this.stars, this._collectStar, null, this);
+        this.physics.add.collider(this.enemys, this.ground);
         this.physics.add.collider(this.enemys, this.platforms);
         this.physics.add.collider(this.player, this.enemys, this._hitPlayer, null, this);
         this.physics.add.overlap(this.player.attacks, this.enemys, this._hitEnemy, null, this);
@@ -146,6 +164,12 @@ class Level1 extends Phaser.Scene {
             else this.physics.pause();
             this.isPaused = !this.isPaused;
         });
+    }
+
+    _createCamera() {
+        // Se setea la camara principal para que siga al jugador y marca los limites del mapa en la camara
+        this.cameras.main.setBounds(0, 0, 2610, 600);
+        this.cameras.main.startFollow(this.player, true, 1, 0);
     }
 
     _collectStar(player, star) {
