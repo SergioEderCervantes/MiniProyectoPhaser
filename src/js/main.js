@@ -2,7 +2,7 @@
 var config = {
     type: Phaser.AUTO,
     width: 2200,
-    height: window.innerHeight.toFixed(0),
+    height: 720,
 
     // Physics support
     physics: {

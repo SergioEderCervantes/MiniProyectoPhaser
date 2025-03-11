@@ -56,8 +56,14 @@ class Level1 extends Phaser.Scene {
         this.player.handleMov(this.cursors);
         this.enemys.children.iterate(enemy => enemy.handleMov());
 
-        if (this.score === 50) {
-            this.scene.start('Level2');
+        if (this.score >= 10 && this.player.x >= 1950) {
+            this.physics.pause();
+            this.time.removeAllEvents
+            this.cameras.main.fade(2000, 0, 0, 0);
+            this.cameras.main.on('camerafadeoutcomplete', () => {
+                this.scene.start('Level2');
+            });
+           
         }
     }
 
@@ -68,8 +74,8 @@ class Level1 extends Phaser.Scene {
         this.ground.create(400, 810, 'ground').setScale(10).refreshBody();
     }
     _createWorld() {
-        this.add.image(1590, 320, 'forest');
-        this.add.image(240, 320, 'forest');
+        this.add.image(1590, window.innerHeight/2 - 50, 'forest');
+        this.add.image(240, window.innerHeight/2 - 50, 'forest');
     }
 
     _cretatePlatforms() {
