@@ -9,8 +9,8 @@ class Level2 extends Level1 {
 
    
     _createWorld() {
-        this.add.image(1590, 320, 'forest2');
-        this.add.image(240, 320, 'forest2');
+        this.add.image(1590, window.innerHeight/2 - 50, 'forest2');
+        this.add.image(240, window.innerHeight/2 - 50, 'forest2');
     }
 
     _createCamera(){

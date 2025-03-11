@@ -72,7 +72,7 @@ class Level1 extends Phaser.Scene {
 
     _createGround() {
         this.ground = this.physics.add.staticGroup();
-        this.ground.create(400, 810, 'ground').setScale(10).refreshBody();
+        this.ground.create(400, window.innerHeight + 110, 'ground').setScale(10).refreshBody();
     }
     _createWorld() {
         this.add.image(1590, window.innerHeight/2 - 50, 'forest');
