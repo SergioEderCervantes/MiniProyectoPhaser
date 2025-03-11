@@ -75,11 +75,11 @@ class Level1 extends Phaser.Scene {
 
     _createGround() {
         this.ground = this.physics.add.staticGroup();
-        this.ground.create(400, window.innerHeight + 110, 'ground').setScale(10).refreshBody();
+        this.ground.create(400, 730, 'ground').setScale(10).refreshBody();
     }
     _createWorld() {
-        this.add.image(1590, window.innerHeight/2 - 50, 'forest');
-        this.add.image(240, window.innerHeight/2 - 50, 'forest');
+        this.add.image(1590, 220, 'forest');
+        this.add.image(240, 220, 'forest');
     }
 
     _cretatePlatforms() {
@@ -104,7 +104,7 @@ class Level1 extends Phaser.Scene {
     }
 
     _createPlayer() {
-        this.player = new Player(this, 100, 625);
+        this.player = new Player(this, 100, 400);
     }
 
     _createEnemys() {
@@ -118,7 +118,7 @@ class Level1 extends Phaser.Scene {
             { x: 784, y: 512 }
         ]
         this.time.addEvent({
-            delay: 3000,
+            delay: 1000,
             callback: () => {
                 let spw = spawnPoints[Math.floor(Math.random() * 4)];
                 this.enemys.add(new Enemy(this, spw.x, spw.y, this.player))
@@ -134,7 +134,8 @@ class Level1 extends Phaser.Scene {
 
     _createScoreText() {
         // Texto
-        this.scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+        this.scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#fff' });
+        this.scoreText.setScrollFactor(0);
     }
 
 
@@ -198,7 +199,7 @@ class Level1 extends Phaser.Scene {
 
     _createCamera() {
         // Se setea la camara principal para que siga al jugador y marca los limites del mapa en la camara
-        this.cameras.main.setBounds(0, 0, 2610, window.innerHeight.toFixed(0));
+        this.cameras.main.setBounds(0, 0, 2610, 600);
         this.cameras.main.startFollow(this.player, true, 1, 1);
     }
 

@@ -2,7 +2,7 @@
 var config = {
     type: Phaser.AUTO,
     width: 2200,
-    height: 720,
+    height: 620,
 
     // Physics support
     physics: {
@@ -12,7 +12,7 @@ var config = {
             debug: true
         }
     },
-    scene: [new Level1('Level1'), new Level2()]
+    scene: [new Level1('Level1'), new Level2('Level2')]
 };
 
 var game = new Phaser.Game(config);
