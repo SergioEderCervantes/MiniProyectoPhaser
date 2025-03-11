@@ -112,10 +112,10 @@ class Level1 extends Phaser.Scene {
         this.enemys = this.physics.add.group();
         // Creacion periodica de enemigos cada 3 segundos (cambiar si es necesario):
         const spawnPoints = [
-            { x: 784, y: 180 },
-            { x: 784, y: 360 },
             { x: 16, y: 210 },
-            { x: 784, y: 512 }
+            { x: 16, y: 460 },
+            { x: 1084, y: 60 },
+            { x: 1982, y: 160 },
         ]
         this.time.addEvent({
             delay: 1000,
