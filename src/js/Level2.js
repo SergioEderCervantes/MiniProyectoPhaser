@@ -21,5 +21,22 @@ class Level2 extends Level1 {
 
     }
 
+    _createIntroText() {
+        // Crear el texto en la pantalla
+        let introText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, 
+            'Level 2', 
+            { fontSize: '64px', fill: '#ffffff' }
+        ).setOrigin(0.5); // Centrar el texto
+    
+        // Aplicar un tween para desvanecerlo progresivamente
+        this.tweens.add({
+            targets: introText,
+            alpha: 0,        // Desaparece el texto
+            duration: 5000,  // 3 segundos
+            delay: 1000,     // Espera 1 segundo antes de comenzar a desvanecer
+            onComplete: () => { introText.destroy(); } // Elimina el texto después de desvanecerse
+        });
+    }
+    
 }
 
