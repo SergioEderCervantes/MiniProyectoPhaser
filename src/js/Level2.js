@@ -4,13 +4,13 @@ class Level2 extends Level1 {
     }
 
     preload() {
-        this.load.image('forest2', '../../assets/forest2.jpg');
+        this.load.image('forest3', '../../assets/forest3.jpg');
     }
 
    
     _createWorld() {
-        this.add.image(1590, window.innerHeight/2 - 50, 'forest2');
-        this.add.image(240, window.innerHeight/2 - 50, 'forest2');
+        this.add.image(1590, window.innerHeight/2 - 50, 'forest3');
+        this.add.image(240, window.innerHeight/2 - 50, 'forest3');
     }
 
     _createCamera(){

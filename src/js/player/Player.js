@@ -8,6 +8,7 @@ class Player extends AbsCharacter {
         this.isAttacking = false;
         this.attacks = this.scene.physics.add.group();
         this.attackDir = '';
+        this.isInvincible = false;
         this._createAnimations();
 
     }

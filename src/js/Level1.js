@@ -7,10 +7,13 @@ class Level1 extends Phaser.Scene {
         this.cursors = null;
         this.stars = null;
         this.score = 0;
+        this.hits = 0;
         this.scoreText = null;
         this.bombs = null;
         this.gameOver = false;
         this.isPaused = false;
+        this.playerEnemyCollider = null; 
+
     }
 
 
@@ -168,7 +171,7 @@ class Level1 extends Phaser.Scene {
         this.physics.add.overlap(this.player, this.stars, this._collectStar, null, this);
         this.physics.add.collider(this.enemys, this.ground);
         this.physics.add.collider(this.enemys, this.platforms);
-        this.physics.add.collider(this.player, this.enemys, this._hitPlayer, null, this);
+        this.playerEnemyCollider = this.physics.add.collider(this.player, this.enemys, this._hitPlayer, null, this);
         this.physics.add.overlap(this.player.attacks, this.enemys, this._hitEnemy, null, this);
     }
 
@@ -213,8 +216,38 @@ class Level1 extends Phaser.Scene {
         this._onGameOver();
     }
 
+    _activateInvincibility(player) {
+        player.isInvincible = true;
+        
+        this.tweens.add({
+            targets: player,
+            alpha: 0,
+            ease: 'Linear',
+            duration: 100,
+            repeat: 14, 
+            yoyo: true
+        });
+        this.physics.world.removeCollider(this.playerEnemyCollider);
+
+        this.time.delayedCall(3000, () => {
+            player.isInvincible = false;
+            this.playerEnemyCollider = this.physics.add.collider(this.player, this.enemys, this._hitPlayer, null, this);
+
+        });
+    }
 
     _hitPlayer(player, enemy) {
+       
+
+        if (this.hits === 2) {
+            this._deadPlayer(player, enemy);
+        } else {
+            this.hits++;
+            enemy.destroy();
+            this._activateInvincibility(player); // Activar la inmunidad
+        }
+    }
+    _deadPlayer(player, enemy) {
         player.setTint(0xff0000);
         player._stop();
         enemy._stop();
