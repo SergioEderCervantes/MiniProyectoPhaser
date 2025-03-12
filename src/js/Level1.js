@@ -118,14 +118,14 @@ class Level1 extends Phaser.Scene {
             { x: 16, y: 210 },
             { x: 784, y: 512 }
         ]
-        // this.time.addEvent({
-        //     delay: 1000,
-        //     callback: () => {
-        //         let spw = spawnPoints[Math.floor(Math.random() * 4)];
-        //         this.enemys.add(new Enemy(this, spw.x, spw.y, this.player))
-        //     },
-        //     loop: true,
-        // });
+        this.time.addEvent({
+            delay: 1000,
+            callback: () => {
+                let spw = spawnPoints[Math.floor(Math.random() * 4)];
+                this.enemys.add(new Enemy(this, spw.x, spw.y, this.player))
+            },
+            loop: true,
+        });
     }
 
     _createStars() {
@@ -191,7 +191,6 @@ class Level1 extends Phaser.Scene {
             scape: Phaser.Input.Keyboard.KeyCodes.ESC
         });
         this.cursors.scape.on("down", () => {
-            // TODO: manejar bien las pausas (con un menu o idk)
             this._handlePause();
         });
     }
@@ -270,30 +269,32 @@ class Level1 extends Phaser.Scene {
         this.physics.pause();
         this.time.removeAllEvents();
         this.gameOver = true;
+        this._createMenuGO();
     }
 
 
     _handlePause() {
+        console.log(this.isPaused)
         // Si no estaba previamente pausado, hacer pausa
         if (!this.isPaused) {
             this.physics.pause();
             this.time.paused = true;
             this.anims.pauseAll();
-            this._createMenu("");
+            this._createMenuPause();
         } else {
             // Ya estaba pausado, logica para resumir 
             this.physics.resume();
             this.time.paused = false;
             this.anims.resumeAll();
-            if (this.menuContainer) {
-                this.menuContainer.destroy(); // Elimina el menú y la sombra
-                this.menuContainer = null;
-            }
+            this._closeMenu();
         }
         this.isPaused = !this.isPaused;
     }
 
-    _createMenu(textos) {
+
+
+    // Creacion de Menus
+    _createMenuPause() {
         const mainCamara = this.cameras.main;
         const dispCentX = window.innerWidth / 2 + mainCamara.scrollX;
         const dispCentY = window.innerHeight / 2 + mainCamara.scrollY;
@@ -323,16 +324,55 @@ class Level1 extends Phaser.Scene {
 
 
         btn1.on('pointerdown', () => {
-            console.log('Image 1 clicked!');
-
+            this._handlePause();
         });
 
         btn2.on('pointerdown', () => {
-            console.log('Image 2 clicked!');
-
+            console.log('Reiniciando la escena');
+            // Aqui hay un error, cuando se hace reset de la escena los enemigos no aparecen, sin embargo
+            // si no estoy mal, se tiene que regresar al menu principal, no aqui, so lo dejare asi hasta estar seguros
+            // this.scene.restart();
+            location.reload();
         });
 
     }
 
+    // Menu para el game Over
+    _createMenuGO(){
+        const mainCamara = this.cameras.main;
+        const dispCentX = window.innerWidth / 2 + mainCamara.scrollX;
+        const dispCentY = window.innerHeight / 2 + mainCamara.scrollY;
+        // Capa de sombra que cubre toda la pantalla
+        const sombra = this.add.rectangle(
+            mainCamara.scrollX + this.scale.width / 2,  
+            mainCamara.scrollY + this.scale.height / 2,
+            this.scale.width, this.scale.height,
+            0x000000, 0.8  
+        ).setOrigin(0.5);
+        const textStyle = { fontSize: '32px', fill: "#fff" };
+
+        // UI elements
+        const title = this.add.text(dispCentX - 70, dispCentY - 200, "Game Over", textStyle);
+        const btn = this.add.image(dispCentX + 20, dispCentY, 'button').setInteractive();
+        const text = this.add.text(dispCentX- 70, btn.y - 16, "Reiniciar", textStyle);
+        // Contenedor
+        this.menuContainer = this.add.container(0, 0, [sombra, title, btn, text ])
+
+        
+        sombra.setDepth(0);
+        this.menuContainer.setDepth(1);
+
+        //  TODO IMPORTANTE: probablemente la maestra se empute si ve que asi reiniciamos el juego
+        btn.on('pointerdown', () => location.reload());
+    }
+
+
+    // Estoy pensandolo para que esta funcion mate a todos los menus, si el create no se puede al menos el destroy
+    _closeMenu(){
+        if (this.menuContainer) {
+            this.menuContainer.destroy(); 
+            this.menuContainer = null;
+        }
+    }
 }
 
