@@ -1,6 +1,6 @@
 class Level1 extends Phaser.Scene {
     constructor(key) {
-        super({ key: key});
+        super({ key: key });
         this.platforms = null;
         this.player = null;
         this.enemys = null;
@@ -12,8 +12,8 @@ class Level1 extends Phaser.Scene {
         this.bombs = null;
         this.gameOver = false;
         this.isPaused = false;
-        this.playerEnemyCollider = null; 
-
+        this.playerEnemyCollider = null;
+        this.menuContainer = null;
     }
 
 
@@ -25,6 +25,7 @@ class Level1 extends Phaser.Scene {
         this.load.image('ground', '../../assets/platform.png');
         this.load.image('star', '../../assets/star.png');
         this.load.image('bomb', '../../assets/bomb.png');
+        this.load.image('button', '../../assets/btnPerdonJost.png')
         this.load.spritesheet('dude',
             '../../assets/dude.png',
             { frameWidth: 32, frameHeight: 48 }
@@ -50,7 +51,7 @@ class Level1 extends Phaser.Scene {
         this._createBombs();
         this._createIntroText();
         this._createColliders();
-      
+
 
     }
 
@@ -62,12 +63,12 @@ class Level1 extends Phaser.Scene {
 
         if (this.score >= 10 && this.player.x >= 1950) {
             this.physics.pause();
-            this.time.removeAllEvents
+            this.time.removeAllEvents();
             this.cameras.main.fade(2000, 0, 0, 0);
             this.cameras.main.on('camerafadeoutcomplete', () => {
                 this.scene.start('Level2');
             });
-           
+
         }
     }
 
@@ -85,7 +86,7 @@ class Level1 extends Phaser.Scene {
     _cretatePlatforms() {
         // Se le asigna a las plataformas un grupo estatico (No se mueven ni afecta la gravedad
         // pero interactuan con demas objetos);
-        
+
 
         // Se crea en el x = 600, y = 400, se escala para que sea mas grande y siempre que se 
         // escale se debe de usar el refreshBody para que su colision se actualice
@@ -99,7 +100,7 @@ class Level1 extends Phaser.Scene {
         this.platforms.create(1500, 300, 'ground');
         this.platforms.create(1200, 100, 'ground');
         this.platforms.create(1170, 490, 'ground');
-        
+
 
     }
 
@@ -146,11 +147,11 @@ class Level1 extends Phaser.Scene {
 
     _createIntroText() {
         // Crear el texto en la pantalla
-        let introText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, 
-            'Level 1', 
+        let introText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY,
+            'Level 1',
             { fontSize: '64px', fill: '#ffffff' }
         ).setOrigin(0.5); // Centrar el texto
-    
+
         // Aplicar un tween para desvanecerlo progresivamente
         this.tweens.add({
             targets: introText,
@@ -160,7 +161,7 @@ class Level1 extends Phaser.Scene {
             onComplete: () => { introText.destroy(); } // Elimina el texto después de desvanecerse
         });
     }
-    
+
     _createColliders() {
         this.physics.add.collider(this.player, this.ground);
         this.physics.add.collider(this.player, this.platforms);
@@ -190,10 +191,7 @@ class Level1 extends Phaser.Scene {
             scape: Phaser.Input.Keyboard.KeyCodes.ESC
         });
         this.cursors.scape.on("down", () => {
-            // TODO: manejar bien las pausas (con un menu o idk)
-            if (this.isPaused) this.physics.resume();
-            else this.physics.pause();
-            this.isPaused = !this.isPaused;
+            this._handlePause();
         });
     }
 
@@ -219,13 +217,13 @@ class Level1 extends Phaser.Scene {
 
     _activateInvincibility(player) {
         player.isInvincible = true;
-        
+
         this.tweens.add({
             targets: player,
             alpha: 0,
             ease: 'Linear',
             duration: 100,
-            repeat: 14, 
+            repeat: 14,
             yoyo: true
         });
         this.physics.world.removeCollider(this.playerEnemyCollider);
@@ -238,7 +236,7 @@ class Level1 extends Phaser.Scene {
     }
 
     _hitPlayer(player, enemy) {
-       
+
 
         if (this.hits === 2) {
             this._deadPlayer(player, enemy);
@@ -267,10 +265,114 @@ class Level1 extends Phaser.Scene {
     }
 
 
-    _onGameOver(){
+    _onGameOver() {
         this.physics.pause();
         this.time.removeAllEvents();
         this.gameOver = true;
+        this._createMenuGO();
+    }
+
+
+    _handlePause() {
+        console.log(this.isPaused)
+        // Si no estaba previamente pausado, hacer pausa
+        if (!this.isPaused) {
+            this.physics.pause();
+            this.time.paused = true;
+            this.anims.pauseAll();
+            this._createMenuPause();
+        } else {
+            // Ya estaba pausado, logica para resumir 
+            this.physics.resume();
+            this.time.paused = false;
+            this.anims.resumeAll();
+            this._closeMenu();
+        }
+        this.isPaused = !this.isPaused;
+    }
+
+
+
+    // Creacion de Menus
+    _createMenuPause() {
+        const mainCamara = this.cameras.main;
+        const dispCentX = window.innerWidth / 2 + mainCamara.scrollX;
+        const dispCentY = window.innerHeight / 2 + mainCamara.scrollY;
+        // Capa de sombra que cubre toda la pantalla
+        const sombra = this.add.rectangle(
+            mainCamara.scrollX + this.scale.width / 2,  
+            mainCamara.scrollY + this.scale.height / 2,
+            this.scale.width, this.scale.height,
+            0x000000, 0.8  
+        ).setOrigin(0.5);
+
+
+        // Crea el grupo de la UI y lo llena:
+        const textStyle = { fontSize: '32px', fill: "#fff" };
+        const btn1 = this.add.image(dispCentX, dispCentY - 100, 'button').setInteractive();
+        const btn2 = this.add.image(dispCentX, dispCentY + 100, 'button').setInteractive();
+        const text1 = this.add.text(dispCentX - 55, dispCentY - 300, "Paused", textStyle);
+        const text2 = this.add.text(btn1.x - 55, btn1.y - 16, "Resume", textStyle);
+        const text3 = this.add.text(btn1.x - 55, btn2.y - 16, "Restart", textStyle);
+
+        // Contenedor
+        this.menuContainer = this.add.container(0, 0, [sombra, btn1, btn2, text1, text2, text3 ])
+
+        
+        sombra.setDepth(0);
+        this.menuContainer.setDepth(1);
+
+
+        btn1.on('pointerdown', () => {
+            this._handlePause();
+        });
+
+        btn2.on('pointerdown', () => {
+            console.log('Reiniciando la escena');
+            // Aqui hay un error, cuando se hace reset de la escena los enemigos no aparecen, sin embargo
+            // si no estoy mal, se tiene que regresar al menu principal, no aqui, so lo dejare asi hasta estar seguros
+            // this.scene.restart();
+            location.reload();
+        });
+
+    }
+
+    // Menu para el game Over
+    _createMenuGO(){
+        const mainCamara = this.cameras.main;
+        const dispCentX = window.innerWidth / 2 + mainCamara.scrollX;
+        const dispCentY = window.innerHeight / 2 + mainCamara.scrollY;
+        // Capa de sombra que cubre toda la pantalla
+        const sombra = this.add.rectangle(
+            mainCamara.scrollX + this.scale.width / 2,  
+            mainCamara.scrollY + this.scale.height / 2,
+            this.scale.width, this.scale.height,
+            0x000000, 0.8  
+        ).setOrigin(0.5);
+        const textStyle = { fontSize: '32px', fill: "#fff" };
+
+        // UI elements
+        const title = this.add.text(dispCentX - 70, dispCentY - 200, "Game Over", textStyle);
+        const btn = this.add.image(dispCentX + 20, dispCentY, 'button').setInteractive();
+        const text = this.add.text(dispCentX- 70, btn.y - 16, "Reiniciar", textStyle);
+        // Contenedor
+        this.menuContainer = this.add.container(0, 0, [sombra, title, btn, text ])
+
+        
+        sombra.setDepth(0);
+        this.menuContainer.setDepth(1);
+
+        //  TODO IMPORTANTE: probablemente la maestra se empute si ve que asi reiniciamos el juego
+        btn.on('pointerdown', () => location.reload());
+    }
+
+
+    // Estoy pensandolo para que esta funcion mate a todos los menus, si el create no se puede al menos el destroy
+    _closeMenu(){
+        if (this.menuContainer) {
+            this.menuContainer.destroy(); 
+            this.menuContainer = null;
+        }
     }
 }
 
