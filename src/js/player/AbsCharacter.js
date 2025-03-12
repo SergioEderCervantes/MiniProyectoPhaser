@@ -24,14 +24,28 @@ class AbsCharacter extends Phaser.Physics.Arcade.Sprite{
 
     }
 
-    _movRight(){
-        this.setVelocityX(this.velocityX);
-        this.anims.play(this.rightAnim, true);
+    _movRight(dash = false){
+        if(dash){
+            this.setVelocityX(this.velocityX * 10);
+            this.setAccelerationX(this.velocityX * -5);
+            
+        } else{
+            this.setVelocityX(this.velocityX);
+            this.anims.play(this.rightAnim, true);
+            
+        }
     }
+    
+    _movLeft(dash = false){
+        if(dash){
+            this.setVelocityX((this.velocityX * -10));
+            this.setAccelerationX(this.velocityX * 5);
+            
+        } else{
+            this.setVelocityX((this.velocityX * -1));
+            this.anims.play(this.leftAnim,true);
 
-    _movLeft(){
-        this.setVelocityX((this.velocityX * -1));
-        this.anims.play(this.leftAnim,true);
+        }
     }
 
     _stop(){

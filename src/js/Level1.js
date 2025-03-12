@@ -118,14 +118,14 @@ class Level1 extends Phaser.Scene {
             { x: 1084, y: 60 },
             { x: 1982, y: 160 },
         ]
-        this.time.addEvent({
-            delay: 1000,
-            callback: () => {
-                let spw = spawnPoints[Math.floor(Math.random() * 4)];
-                this.enemys.add(new Enemy(this, spw.x, spw.y, this.player))
-            },
-            loop: true,
-        });
+        // this.time.addEvent({
+        //     delay: 1000,
+        //     callback: () => {
+        //         let spw = spawnPoints[Math.floor(Math.random() * 4)];
+        //         this.enemys.add(new Enemy(this, spw.x, spw.y, this.player))
+        //     },
+        //     loop: true,
+        // });
     }
 
     _createStars() {
@@ -188,7 +188,8 @@ class Level1 extends Phaser.Scene {
             attack_left: Phaser.Input.Keyboard.KeyCodes.LEFT,
             attack_right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
             attack_up: Phaser.Input.Keyboard.KeyCodes.UP,
-            scape: Phaser.Input.Keyboard.KeyCodes.ESC
+            scape: Phaser.Input.Keyboard.KeyCodes.ESC,
+            shift: Phaser.Input.Keyboard.KeyCodes.SHIFT
         });
         this.cursors.scape.on("down", () => {
             this._handlePause();

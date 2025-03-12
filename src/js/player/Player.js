@@ -9,6 +9,8 @@ class Player extends AbsCharacter {
         this.attacks = this.scene.physics.add.group();
         this.attackDir = '';
         this.isInvincible = false;
+        this.isDashing = false;
+        this.onDashingCooldown = false;
         this._createAnimations();
 
     }
@@ -36,19 +38,25 @@ class Player extends AbsCharacter {
 
     }
     handleMov(cursors) {
-        const { left, right, up, attack_left, attack_right, attack_up } = cursors;
-        const prevX = this.x;
-        const prevY = this.y;
-
+        // Si esta en medio de un dash no se puede hacer nada
+        if (this.isDashing) return;
+        const { left, right, up, attack_left, attack_right, attack_up, shift } = cursors;
+        const dash = shift.isDown;
+        // Mov Handling
         if (left.isDown) {
-            this._movLeft();
+            !dash ? this._movLeft() : this._dash(200, 200, -1);
         } else
-            if (right.isDown) {
-                this._movRight();
-            } else this._stop();
+        if (right.isDown) {
+            this._movRight();
+            !dash ? this._movRight() : this._dash(200, 200, 1);
+        } else {
+            this._stop();
+        }
         if (up.isDown && this.body.touching.down) {
             this._jump();
         }
+
+        //Atack handling
         // Mover el ataque siguiendo al jugador
         if (this.isAttacking) {
             this._movAttack();
@@ -61,6 +69,32 @@ class Player extends AbsCharacter {
             this._attack('up');
         }
     }
+
+    // Crea la accion de dash, con la distancia en px, duracion en ms y direccion 1 si es derecha, -1 si es izq
+    _dash(distance, duration, direction){
+        if(this.isDashing || this.onDashingCooldown) return;
+
+        this.isDashing = true;
+        this.onDashingCooldown = true;
+        this.setVelocityX(0);
+        const cooldown = 2000
+        // Aqui se pondria la animacion del dash
+
+        // Opcion dos
+        const velocity = (distance/duration) * 1000; // Velocidad en pixeles por segundo
+        this.setVelocityX(direction*velocity);
+        // Acaba el dash
+        this.scene.time.delayedCall(duration, () => {
+            this.setVelocityX(0);
+            this.isDashing = false;
+            // Aqui se llamaria a la animacion de stop para parar la animacion de dash
+        })
+        // Delayed call para el cooldown, el cooldown se calcula igual que el cooldown del ataque, duracion de este DC - la duracion del 
+        // DC anterior, por ejemplo 2000 - 200 = 2800 ms de cooldown
+        this.scene.time.delayedCall(cooldown, () => this.onDashingCooldown = false);
+
+    }
+
 
     _movAttack() {
         this.attacks.children.iterate(child => {
