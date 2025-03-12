@@ -9,34 +9,21 @@ class Player extends AbsCharacter {
         this.attacks = this.scene.physics.add.group();
         this.attackDir = '';
         this.isInvincible = false;
+        // Cosas del dash
         this.isDashing = false;
         this.onDashingCooldown = false;
+        this.cooldownStartTime = 0;
+        this.cooldown = 2000;
         this._createAnimations();
-
     }
 
-    _createAnimations() {
-        this.scene.anims.create({
-            key: this.leftAnim,
-            frames: this.scene.anims.generateFrameNumbers(this.nombreTextura, { start: 0, end: 3 }),
-            frameRate: 10,
-            repeat: -1,
-        });
-
-        this.scene.anims.create({
-            key: this.turnAnim,
-            frames: [{ key: this.nombreTextura, frame: 4 }],
-            frameRate: 20
-        });
-
-        this.scene.anims.create({
-            key: this.rightAnim,
-            frames: this.scene.anims.generateFrameNumbers(this.nombreTextura, { start: 5, end: 8 }),
-            frameRate: 10,
-            repeat: -1
-        });
-
+    // Metodos publicos
+    getDashCooldwnProg() {
+        if (!this.onDashingCooldown) return 0;
+        let elapsed = this.scene.time.now - this.cooldownStartTime;
+        return Phaser.Math.Clamp(1 - (elapsed / this.cooldown ), 0, 1);
     }
+
     handleMov(cursors) {
         // Si esta en medio de un dash no se puede hacer nada
         if (this.isDashing) return;
@@ -70,14 +57,41 @@ class Player extends AbsCharacter {
         }
     }
 
+
+    // Metodos privados
+    _createAnimations() {
+        this.scene.anims.create({
+            key: this.leftAnim,
+            frames: this.scene.anims.generateFrameNumbers(this.nombreTextura, { start: 0, end: 3 }),
+            frameRate: 10,
+            repeat: -1,
+        });
+
+        this.scene.anims.create({
+            key: this.turnAnim,
+            frames: [{ key: this.nombreTextura, frame: 4 }],
+            frameRate: 20
+        });
+
+        this.scene.anims.create({
+            key: this.rightAnim,
+            frames: this.scene.anims.generateFrameNumbers(this.nombreTextura, { start: 5, end: 8 }),
+            frameRate: 10,
+            repeat: -1
+        });
+
+    }
+    
+
     // Crea la accion de dash, con la distancia en px, duracion en ms y direccion 1 si es derecha, -1 si es izq
     _dash(distance, duration, direction){
         if(this.isDashing || this.onDashingCooldown) return;
+        this.setVelocityX(0);
 
         this.isDashing = true;
         this.onDashingCooldown = true;
-        this.setVelocityX(0);
-        const cooldown = 2000
+        this.cooldownStartTime = this.scene.time.now;
+        
         // Aqui se pondria la animacion del dash
 
         // Opcion dos
@@ -88,10 +102,10 @@ class Player extends AbsCharacter {
             this.setVelocityX(0);
             this.isDashing = false;
             // Aqui se llamaria a la animacion de stop para parar la animacion de dash
+
+            // Delayed call para el cooldown
+            this.scene.time.delayedCall(this.cooldown, () => this.onDashingCooldown = false);
         })
-        // Delayed call para el cooldown, el cooldown se calcula igual que el cooldown del ataque, duracion de este DC - la duracion del 
-        // DC anterior, por ejemplo 2000 - 200 = 2800 ms de cooldown
-        this.scene.time.delayedCall(cooldown, () => this.onDashingCooldown = false);
 
     }
 

@@ -14,6 +14,7 @@ class Level1 extends Phaser.Scene {
         this.isPaused = false;
         this.playerEnemyCollider = null;
         this.menuContainer = null;
+        this.dashCooldownBar = null;
     }
 
 
@@ -52,6 +53,9 @@ class Level1 extends Phaser.Scene {
         this._createIntroText();
         this._createColliders();
 
+        // Tema UI
+        this._createDashCooldownUI();
+
 
     }
 
@@ -60,7 +64,7 @@ class Level1 extends Phaser.Scene {
         if (this.gameOver) return;
         this.player.handleMov(this.cursors);
         this.enemys.children.iterate(enemy => enemy.handleMov());
-
+        this._updateDashCooldownUI();
         if (this.score >= 10 && this.player.x >= 1950) {
             this.physics.pause();
             this.time.removeAllEvents();
@@ -118,14 +122,14 @@ class Level1 extends Phaser.Scene {
             { x: 1084, y: 60 },
             { x: 1982, y: 160 },
         ]
-        // this.time.addEvent({
-        //     delay: 1000,
-        //     callback: () => {
-        //         let spw = spawnPoints[Math.floor(Math.random() * 4)];
-        //         this.enemys.add(new Enemy(this, spw.x, spw.y, this.player))
-        //     },
-        //     loop: true,
-        // });
+        this.time.addEvent({
+            delay: 1000,
+            callback: () => {
+                let spw = spawnPoints[Math.floor(Math.random() * 4)];
+                this.enemys.add(new Enemy(this, spw.x, spw.y, this.player))
+            },
+            loop: true,
+        });
     }
 
     _createStars() {
@@ -275,7 +279,6 @@ class Level1 extends Phaser.Scene {
 
 
     _handlePause() {
-        console.log(this.isPaused)
         // Si no estaba previamente pausado, hacer pausa
         if (!this.isPaused) {
             this.physics.pause();
@@ -294,7 +297,7 @@ class Level1 extends Phaser.Scene {
 
 
 
-    // Creacion de Menus
+    // Creacion de Menus y UI
     _createMenuPause() {
         const mainCamara = this.cameras.main;
         const dispCentX = window.innerWidth / 2 + mainCamara.scrollX;
@@ -374,6 +377,22 @@ class Level1 extends Phaser.Scene {
             this.menuContainer.destroy(); 
             this.menuContainer = null;
         }
+    }
+
+
+    _createDashCooldownUI(){
+        this.cooldownBar = this.add.graphics();
+        this.cooldownBar.fillStyle(0xff0000, 1); 
+        this.cooldownBar.fillRect(20, 50, 100, 20); 
+        this.cooldownBar.setDepth(10); 
+        this.cooldownBar.setScrollFactor(0);
+
+    }
+    _updateDashCooldownUI(){
+        let progress = this.player.getDashCooldwnProg();
+        this.cooldownBar.clear();
+        this.cooldownBar.fillStyle(0xffffff, 1);
+        this.cooldownBar.fillRect(20, 50, 100 * progress, 10); 
     }
 }
 
