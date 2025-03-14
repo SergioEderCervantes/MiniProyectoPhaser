@@ -36,8 +36,13 @@ class Level1 extends Phaser.Scene {
         this.load.image('ground', '../../assets/platform.png');
         this.load.image('star', '../../assets/star.png');
         this.load.image('platform', '../../assets/plank.png');
+        this.load.image('platformw', '../../assets/plankwall.png');
+        this.load.image('wall', '../../assets/wall.png');
         this.load.image('bomb', '../../assets/bomb.png');
         this.load.image('button', '../../assets/btnPerdonJost.png')
+        this.load.image('back', '../../assets/cave.png')
+        this.load.image('front', '../../assets/cavef.png')
+        this.load.image('rocks', '../../assets/rocks.png')
         
         this.load.spritesheet('idle',
             '../../assets/player/_Idle.png',
@@ -84,6 +89,7 @@ class Level1 extends Phaser.Scene {
         this._createPlayer();
         this._createEnemys();
         this._createStars();
+        this._createCave();
         this._createCursors();
         this._createCamera();
         this._createIntroText();
@@ -148,8 +154,7 @@ class Level1 extends Phaser.Scene {
         this.add.image(620,300,'layer5').setScrollFactor(0.8);
         this.add.image(1860,300,'layer5').setScrollFactor(0.8);
 
-        this.add.image(620,300,'layer6').setScrollFactor(1);
-        this.add.image(1860,300,'layer6').setScrollFactor(1);
+
 
 
     }
@@ -163,20 +168,25 @@ class Level1 extends Phaser.Scene {
         // escale se debe de usar el refreshBody para que su colision se actualice
         this.platforms = this.physics.add.staticGroup();
         this.platforms.create(600, 400, 'platform').setScale(3).refreshBody();
+        this.platforms.create(800, 400, 'platform').setScale(3).refreshBody();
         this.platforms.create(50, 250, 'platform').setScale(3).refreshBody();
         this.platforms.create(750, 220, 'platform').setScale(3).refreshBody();
         this.platforms.create(150, 450, 'platform').setScale(3).refreshBody();
-        this.platforms.create(2000, 200, 'platform').setScale(3).refreshBody();;
-        this.platforms.create(1800, 460, 'platform').setScale(3).refreshBody();;
-        this.platforms.create(1500, 300, 'platform').setScale(3).refreshBody();;
-        this.platforms.create(1200, 100, 'platform').setScale(3).refreshBody();;
-        this.platforms.create(1170, 490, 'platform').setScale(3).refreshBody();;
+        this.platforms.create(1900, 200, 'platform').setScale(3).refreshBody();
+        this.platforms.create(1600, 300, 'platform').setScale(3).refreshBody();
+        this.platforms.create(1200, 100, 'platform').setScale(3).refreshBody();
+        this.platforms.create(1190, 425, 'platform').setScale(3).refreshBody();
+        this.platforms.create(1260, 425, 'platform').setScale(3).refreshBody();
+        this.platforms.create(1950, 358, 'platformw').setScale(3).refreshBody();
+        this.platforms.create(1934, 125, 'wall').flipX = true;
+        this.platforms.create(1915, 500, 'rocks');
 
+        this.add.image(1880, 530, 'back');
 
     }
 
     _createPlayer() {
-        this.player = new Player(this, 90, 400);
+        this.player = new Player(this, 90, 525);
         this.player.setSize(24, 47);
         this.player.setOffset(42, 35);
     }
@@ -191,21 +201,29 @@ class Level1 extends Phaser.Scene {
             { x: 1084, y: 60 },
             { x: 1982, y: 160 },
         ]
-        // this.time.addEvent({
-        //     delay: 1000,
-        //     callback: () => {
-        //         let spw = spawnPoints[Math.floor(Math.random() * 4)];
-        //         this.enemys.add(new Enemy(this, spw.x, spw.y, this.player))
-        //     },
-        //     loop: true,
-        // });
+       this.time.addEvent({
+           delay: 1000,
+           callback: () => {
+               let spw = spawnPoints[Math.floor(Math.random() * 4)];
+               this.enemys.add(new Enemy(this, spw.x, spw.y, this.player))
+           },
+           loop: true,
+       });
     }
 
     _createStars() {
         // Grupo estrellas
         this.stars = this.physics.add.group();
-    }
+        
 
+    }
+    _createCave() {
+        
+        this.add.image(1915, 556, 'front');
+        this.add.image(1820, 580, 'rocks').setScale(1.5);
+        this.add.image(620,305,'layer6').setScrollFactor(1.1);
+        this.add.image(1800,305,'layer6').setScrollFactor(1.1);
+    }
     _createIntroText() {
         // Crear el texto en la pantalla
         let introText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY,
