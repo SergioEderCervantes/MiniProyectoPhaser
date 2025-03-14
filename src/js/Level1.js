@@ -9,7 +9,6 @@ class Level1 extends Phaser.Scene {
         this.score = 0;
         this.hits = 0;
         this.scoreText = null;
-        this.bombs = null;
         this.gameOver = false;
         this.isPaused = false;
         this.playerEnemyCollider = null;
@@ -26,10 +25,16 @@ class Level1 extends Phaser.Scene {
 
     // Metodo para cargar todos los assets y guardarlos en forma clave-valor
     preload() {
+        this.load.image('layer1','../../assets/parallax_bg_lvl1/Hills Layer 01.png');
+        this.load.image('layer2','../../assets/parallax_bg_lvl1/Hills Layer 02.png');
+        this.load.image('layer3','../../assets/parallax_bg_lvl1/Hills Layer 03.png');
+        this.load.image('layer4','../../assets/parallax_bg_lvl1/Hills Layer 04.png');
+        this.load.image('layer5','../../assets/parallax_bg_lvl1/Hills Layer 05.png');
+        this.load.image('layer6','../../assets/parallax_bg_lvl1/Hills Layer 06.png');
+
         this.load.image('forest', '../../assets/forest.jpg');
         this.load.image('ground', '../../assets/platform.png');
         this.load.image('star', '../../assets/star.png');
-        this.load.image('bomb', '../../assets/bomb.png');
         this.load.image('button', '../../assets/btnPerdonJost.png')
         this.load.spritesheet('dude',
             '../../assets/dude.png',
@@ -39,10 +44,9 @@ class Level1 extends Phaser.Scene {
             '../../assets/enemy.png',
             { frameWidth: 32, frameHeight: 48 }
         );
-        this.load.image('heart', '../../assets/Corazonlleno.png')
-        this.load.image('emptyHeart', '../../assets/CorazonVacio.png')
+        this.load.image('heart', '../../assets/Corazonlleno.png');
+        this.load.image('emptyHeart', '../../assets/CorazonVacio.png');
     }
-
     // Metodo que se llama cuando se crea la escena y la renderiza
     create() {
         this._createGround();
@@ -53,8 +57,6 @@ class Level1 extends Phaser.Scene {
         this._createStars();
         this._createCursors();
         this._createCamera();
-        // TODO si ya no vamos a querer bombas, eliminarlas totalmente del codigo
-        this._createBombs();
         this._createIntroText();
         this._createColliders();
 
@@ -89,8 +91,30 @@ class Level1 extends Phaser.Scene {
         this.ground.create(400, 730, 'ground').setScale(10).refreshBody();
     }
     _createWorld() {
-        this.add.image(1590, 220, 'forest');
-        this.add.image(240, 220, 'forest');
+        // Parallax efect
+
+        // this.add.image(1590, 220, 'forest');
+        // this.add.image(240, 220, 'forest');
+
+        this.add.image(620,310,'layer1').setScrollFactor(0);
+        this.add.image(1625,310,'layer1').setScrollFactor(0);
+
+        this.add.image(620,310,'layer2').setScrollFactor(0.2);
+        this.add.image(1840,310,'layer2').setScrollFactor(0.2);
+
+        this.add.image(620,310,'layer3').setScrollFactor(0.4);
+        this.add.image(1860,310,'layer3').setScrollFactor(0.4);
+
+        this.add.image(620,310,'layer4').setScrollFactor(0.6);
+        this.add.image(1860,310,'layer4').setScrollFactor(0.6);
+
+        this.add.image(620,320,'layer5').setScrollFactor(0.8);
+        this.add.image(1860,320,'layer5').setScrollFactor(0.8);
+
+        this.add.image(620,320,'layer6').setScrollFactor(1);
+        this.add.image(1860,320,'layer6').setScrollFactor(1);
+
+
     }
 
     _cretatePlatforms() {
@@ -143,16 +167,11 @@ class Level1 extends Phaser.Scene {
         this.stars = this.physics.add.group();
     }
 
-    _createBombs() {
-        // Grupo de las bombas
-        this.bombs = this.physics.add.group();
-    }
-
     _createIntroText() {
         // Crear el texto en la pantalla
         let introText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY,
             'Level 1',
-            { fontSize: '64px', fill: '#ffffff' }
+            { fontFamily:'"Pixelify Sans"', fontSize: '64px', fill: '#ffffff' }
         ).setOrigin(0.5); // Centrar el texto
 
         // Aplicar un tween para desvanecerlo progresivamente
@@ -170,9 +189,6 @@ class Level1 extends Phaser.Scene {
         this.physics.add.collider(this.player, this.platforms);
         this.physics.add.collider(this.stars, this.ground);
         this.physics.add.collider(this.stars, this.platforms);
-        this.physics.add.collider(this.bombs, this.ground);
-        this.physics.add.collider(this.bombs, this.platforms);
-        this.physics.add.collider(this.player, this.bombs, this._hitBomb, null, this);
         this.physics.add.overlap(this.player, this.stars, this._collectStar, null, this);
         this.physics.add.collider(this.enemys, this.ground);
         this.physics.add.collider(this.enemys, this.platforms);
@@ -211,12 +227,6 @@ class Level1 extends Phaser.Scene {
         this.score += 10;
         this.scoreText.setText('Score: ' + this.score);
         star.destroy();
-    }
-
-    _hitBomb(player, bomb) {
-        player.setTint(0xff0000);
-        player._stop();
-        this._onGameOver();
     }
 
     _activateInvincibility(player) {
@@ -381,22 +391,30 @@ class Level1 extends Phaser.Scene {
 
     _createUIElements() {
         //Score del jugador
-        this.scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#fff' });
+        this.scoreText = this.add.text(16, 16, 'score: 0', {
+            fontFamily: '"Pixelify Sans"',
+            fontSize: '32px',
+            color: '#6a4952'
+        });
         
         
         // colldown del dash
         this.cooldownBar = this.add.graphics();
-        this.cooldownBar.fillStyle(0xfff, 1);
-        this.cooldownBar.fillRect(window.innerWidth - 130, 50, 100, 15);
+        this.cooldownBar.fillStyle(0x6a4952, 1);
+        this.cooldownBar.fillRect(16, 50, 100, 15);
         this.cooldownBar.setDepth(10);
         // Nombre del jugador
-        this.playerAliasText = this.add.text(window.innerWidth - 150, 16, this.playerAlias, { fontSize: '32px', fill: '#fff' });
+        this.playerAliasText = this.add.text(window.innerWidth - 150, 16, this.playerAlias, {
+            fontFamily: '"Pixelify Sans"',
+            fontSize: '32px',
+            color: '#6a4952'
+        });
         this.playerAliasText.setScrollFactor(0);
         // Corazones de Vida (Abajo del score)
         this.heartDisplay = this.physics.add.staticGroup({
             key: 'heart',
             repeat: 2,
-            setXY: { x: 30, y: 60, stepX: 30 }
+            setXY: { x: window.innerWidth - 120, y: 60, stepX: 30 }
         });
 
 
@@ -409,8 +427,8 @@ class Level1 extends Phaser.Scene {
     _updateDashCooldownUI() {
         let progress = this.player.getDashCooldwnProg();
         this.cooldownBar.clear();
-        this.cooldownBar.fillStyle(0xffffff, 1);
-        this.cooldownBar.fillRect(window.innerWidth - 130, 50, 100 * progress, 15);
+        this.cooldownBar.fillStyle(0x6a4952, 1);
+        this.cooldownBar.fillRect(16, 50, 100 * progress, 15);
     }
 
     _updateHearts() {
