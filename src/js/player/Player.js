@@ -144,13 +144,10 @@ class Player extends AbsCharacter {
         if (this.isAttacking) return;
         this.isAttacking = true;
         if (direction === 'left') {
-        
             this.setVelocityX(-30);
-            
         }
-        else  {
+        else if(direction === 'right') {
             this.setVelocityX(30);
-            
         }
 
 
@@ -162,17 +159,17 @@ class Player extends AbsCharacter {
             // posicion del mismo con respecto al cuerpo, si se quieren cambiar las hitbox ajustenlas 
             // para que se vea bien y no quede separada del player
             left: [
-                { x: this.x - 24, y: this.y, width: 16, height: 48 },
-                { x: this.x - 16, y: this.y - 28, width: 30, height: 8 }
+                { x: this.x - 34, y: this.y + 20, width: 32, height: 48 },
+                { x: this.x - 28, y: this.y - 8, width: 45, height: 8 }
             ],
             right: [
-                { x: this.x + 24, y: this.y, width: 16, height: 48 },
-                { x: this.x + 16, y: this.y - 28, width: 30, height: 8 }
+                { x: this.x + 20, y: this.y + 20, width: 32, height: 48 },
+                { x: this.x + 14, y: this.y - 8, width: 45, height: 8 }
             ],
             up: [
-                { x: this.x, y: this.y - 32, width: 32, height: 16 },
-                { x: this.x - 20, y: this.y - 28, width: 8, height: 24 },
-                { x: this.x + 20, y: this.y - 28, width: 8, height: 24 }
+                { x: this.x - 5, y: this.y - 12, width: 32, height: 16 },
+                { x: this.x - 25, y: this.y - 8, width: 8, height: 24 },
+                { x: this.x + 15, y: this.y - 8, width: 8, height: 24 }
             ]
         };
 

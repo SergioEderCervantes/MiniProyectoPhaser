@@ -18,6 +18,8 @@ class Level1 extends Phaser.Scene {
         this.playerAlias = "Skorge";
         this.playerAliasText = null;
         this.heartDisplay = null;
+        this.color = 0x6a4952;
+        this.textColor = '#6a4952';
     }
 
 
@@ -98,15 +100,7 @@ class Level1 extends Phaser.Scene {
         this.player.handleMov(this.cursors);
         this.enemys.children.iterate(enemy => enemy.handleMov());
         this._updateDashCooldownUI();
-        if (this.score >= 10 && this.player.x >= 1950) {
-            this.physics.pause();
-            this.time.removeAllEvents();
-            this.cameras.main.fade(2000, 0, 0, 0);
-            this.cameras.main.on('camerafadeoutcomplete', () => {
-                this.scene.start('Level2');
-            });
-
-        }
+        this._checkSwitchLvl();
     }
 
     // Metodos auxiliares de la escena
@@ -252,7 +246,7 @@ class Level1 extends Phaser.Scene {
 
     _createCamera() {
         // Se setea la camara principal para que siga al jugador y marca los limites del mapa en la camara
-        this.cameras.main.setBounds(0, 0, 2610, 600);
+        this.cameras.main.setBounds(0, 0, 2800, 600);
         this.cameras.main.startFollow(this.player, true, 1, 1);
     }
 
@@ -338,8 +332,17 @@ class Level1 extends Phaser.Scene {
         }
         this.isPaused = !this.isPaused;
     }
-
-
+    _checkSwitchLvl(){
+        if (this.score >= 10 && this.player.x >= 1950) {
+            this.physics.pause();
+            this.time.removeAllEvents();
+            this.cameras.main.fade(2000, 0, 0, 0);
+            this.cameras.main.on('camerafadeoutcomplete', () => {
+                this.scene.start('Level2');
+            });
+    
+        }
+    }
 
     // Creacion de Menus y UI
     _createMenuPause() {
@@ -429,20 +432,20 @@ class Level1 extends Phaser.Scene {
         this.scoreText = this.add.text(16, 16, 'score: 0', {
             fontFamily: '"Pixelify Sans"',
             fontSize: '32px',
-            color: '#6a4952'
+            color: this.textColor
         });
         
         
         // colldown del dash
         this.cooldownBar = this.add.graphics();
-        this.cooldownBar.fillStyle(0x6a4952, 1);
+        this.cooldownBar.fillStyle(this.color, 1);
         this.cooldownBar.fillRect(16, 50, 100, 15);
         this.cooldownBar.setDepth(10);
         // Nombre del jugador
         this.playerAliasText = this.add.text(window.innerWidth - 150, 16, this.playerAlias, {
             fontFamily: '"Pixelify Sans"',
             fontSize: '32px',
-            color: '#6a4952'
+            color: this.textColor,
         });
         this.playerAliasText.setScrollFactor(0);
         // Corazones de Vida (Abajo del score)
@@ -462,7 +465,7 @@ class Level1 extends Phaser.Scene {
     _updateDashCooldownUI() {
         let progress = this.player.getDashCooldwnProg();
         this.cooldownBar.clear();
-        this.cooldownBar.fillStyle(0x6a4952, 1);
+        this.cooldownBar.fillStyle(this.color, 1);
         this.cooldownBar.fillRect(16, 50, 100 * progress, 15);
     }
 

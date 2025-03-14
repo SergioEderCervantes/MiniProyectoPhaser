@@ -1,6 +1,8 @@
 class Level2 extends Level1 {
     constructor(key) {
         super(key);
+        this.color = 0xffffff;
+        this.textColor = '#ffffff';
     }
 
     preload() {

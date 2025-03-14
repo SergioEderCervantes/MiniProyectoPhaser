@@ -6,34 +6,37 @@ class Enemy extends AbsCharacter {
         this.rightAnim = 'enemy_right';
         this.turnAnim = 'enemy_turn';
         this.attackAnim = '';
-        this._createAnimations();
-        
+        Enemy._createAnimations(scene);
         this.playerTarget = playerTarget;
         this.velocityX = 80;
         this.velocityY = -330;
     }
 
-    _createAnimations(){
-        this.scene.anims.create({
-            key: this.leftAnim,
-            frames: this.scene.anims.generateFrameNumbers(this.nombreTextura, { start: 0, end: 3 }),
+    static _createAnimations(scene){
+        if (Enemy.animationsCreated) return;
+        
+        scene.anims.create({
+            key: 'enemy_left',
+            frames: scene.anims.generateFrameNumbers('enemy', { start: 0, end: 3 }),
             frameRate: 10,
             repeat: -1,
         });
 
-        this.scene.anims.create({
-            key: this.turnAnim,
-            frames: this.scene.anims.generateFrameNumbers(this.nombreTextura, { start: 4, end: 4 }),
+        scene.anims.create({
+            key: 'enemy_turn',
+            frames: scene.anims.generateFrameNumbers('enemy', { start: 4, end: 4 }),
             frameRate: 10,
             repeat: -1,
         });
 
-        this.scene.anims.create({
-            key: this.rightAnim,
-            frames: this.scene.anims.generateFrameNumbers(this.nombreTextura, { start: 5, end: 8 }),
+        scene.anims.create({
+            key: 'enemy_right',
+            frames: scene.anims.generateFrameNumbers('enemy', { start: 5, end: 8 }),
             frameRate: 10,
             repeat: -1
         });
+
+        Enemy.animationsCreated = true;
     }
 
     handleMov(){
@@ -48,7 +51,8 @@ class Enemy extends AbsCharacter {
             this._movRight();
         }
         // Jump mechanics 
-        const playerY = this.playerTarget.y;
+        // El +18 es un  ajuste por lo disparejo que estan los sprites cuando estan en el mismo lvl, verificar cuando se incluyan los demas sprites
+        const playerY = this.playerTarget.y + 18;
         if (playerY < this.y && this.body.touching.down && Math.random() < 0.01){
             this._jump();
         }
