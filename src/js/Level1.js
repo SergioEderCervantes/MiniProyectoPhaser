@@ -59,26 +59,11 @@ class Level1 extends Phaser.Scene {
             '../../assets/player/_Run.png',
             { frameWidth: 120, frameHeight: 80 }
         );
-        // this.load.spritesheet('idle',
-        //     '../../assets/player/_idle.png',
-        //     { frameWidth: 120, frameHeight: 80 }
-        // );
-        // this.load.spritesheet('idle',
-        //     '../../assets/player/_idle.png',
-        //     { frameWidth: 120, frameHeight: 80 }
-        // );
-        // this.load.spritesheet('idle',
-        //     '../../assets/player/_idle.png',
-        //     { frameWidth: 120, frameHeight: 80 }
-        // );
-        // this.load.spritesheet('idle',
-        //     '../../assets/player/_idle.png',
-        //     { frameWidth: 120, frameHeight: 80 }
-        // );
-        // this.load.spritesheet('idle',
-        //     '../../assets/player/_idle.png',
-        //     { frameWidth: 120, frameHeight: 80 }
-        // );
+         this.load.spritesheet('dash',
+             '../../assets/player/Dash.png',
+             { frameWidth: 120, frameHeight: 80 }
+        );
+        
         this.load.spritesheet('enemy',
             '../../assets/enemy.png',
             { frameWidth: 32, frameHeight: 48 }

@@ -6,6 +6,7 @@ class Player extends AbsCharacter {
         this.rightAnim = 'run';
         this.turnAnim = 'turn';
         this.attackAnim = 'attack';
+        this.dashAnim = 'dash';
         this.isAttacking = false;
         this.attacks = this.scene.physics.add.group();
         this.attackDir = '';
@@ -92,7 +93,12 @@ class Player extends AbsCharacter {
             repeat: -1,
         });
 
-      
+        this.scene.anims.create({
+            key: this.dashAnim,
+            frames: this.scene.anims.generateFrameNumbers(this.dashAnim, { start: 0, end: 1 }),
+            frameRate: 10,
+            repeat: 0,
+        });
 
         
 
@@ -109,7 +115,7 @@ class Player extends AbsCharacter {
         this.cooldownStartTime = this.scene.time.now;
         
         // Aqui se pondria la animacion del dash
-
+        this.anims.play(this.dashAnim, true);
         // Opcion dos
         const velocity = (distance/duration) * 1000; // Velocidad en pixeles por segundo
         this.setVelocityX(direction*velocity);
@@ -118,7 +124,7 @@ class Player extends AbsCharacter {
             this.setVelocityX(0);
             this.isDashing = false;
             // Aqui se llamaria a la animacion de stop para parar la animacion de dash
-
+            this.anims.play(this.turnAnim, true);
             // Delayed call para el cooldown
             this.scene.time.delayedCall(this.cooldown, () => this.onDashingCooldown = false);
         })
@@ -139,11 +145,11 @@ class Player extends AbsCharacter {
         this.isAttacking = true;
         if (this.flipX) {
         
-            this.setVelocityX(-10);
+            this.setVelocityX(-30);
             
         }
         else  {
-            this.setVelocityX(10);
+            this.setVelocityX(30);
             
         }
 
