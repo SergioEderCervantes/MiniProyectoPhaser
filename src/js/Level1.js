@@ -196,19 +196,19 @@ class Level1 extends Phaser.Scene {
         this.enemys = this.physics.add.group();
         // Creacion periodica de enemigos cada 3 segundos (cambiar si es necesario):
         const spawnPoints = [
-            { x: 16, y: 210 },
-            { x: 16, y: 460 },
-            { x: 1084, y: 60 },
-            { x: 1982, y: 160 },
+            { x: 70, y: 210 },
+            { x: 920, y: 544 },
+            { x: 1197, y: 55 },
+            { x: 1520, y: 535 },
         ]
-       this.time.addEvent({
-           delay: 1000,
-           callback: () => {
-               let spw = spawnPoints[Math.floor(Math.random() * 4)];
-               this.enemys.add(new Enemy(this, spw.x, spw.y, this.player))
-           },
-           loop: true,
-       });
+      this.time.addEvent({
+          delay: 1000,
+          callback: () => {
+              let spw = spawnPoints[Math.floor(Math.random() * 4)];
+              this.enemys.add(new Enemy(this, spw.x, spw.y, this.player))
+          },
+          loop: true,
+      });
     }
 
     _createStars() {
