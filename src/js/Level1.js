@@ -9,11 +9,15 @@ class Level1 extends Phaser.Scene {
         this.score = 0;
         this.hits = 0;
         this.scoreText = null;
-        this.bombs = null;
         this.gameOver = false;
         this.isPaused = false;
         this.playerEnemyCollider = null;
         this.menuContainer = null;
+        this.dashCooldownBar = null;
+        // TODO: cuando se conecte con el menu playerAlias no sera necesario, o si si va a guardar el valor de lo que ponga el usuario en el menu
+        this.playerAlias = "Skorge";
+        this.playerAliasText = null;
+        this.heartDisplay = null;
     }
 
 
@@ -21,6 +25,13 @@ class Level1 extends Phaser.Scene {
 
     // Metodo para cargar todos los assets y guardarlos en forma clave-valor
     preload() {
+        this.load.image('layer1','../../assets/parallax_bg_lvl1/Hills Layer 01.png');
+        this.load.image('layer2','../../assets/parallax_bg_lvl1/Hills Layer 02.png');
+        this.load.image('layer3','../../assets/parallax_bg_lvl1/Hills Layer 03.png');
+        this.load.image('layer4','../../assets/parallax_bg_lvl1/Hills Layer 04.png');
+        this.load.image('layer5','../../assets/parallax_bg_lvl1/Hills Layer 05.png');
+        this.load.image('layer6','../../assets/parallax_bg_lvl1/Hills Layer 06.png');
+
         this.load.image('forest', '../../assets/forest.jpg');
         this.load.image('ground', '../../assets/platform.png');
         this.load.image('star', '../../assets/star.png');
@@ -72,34 +83,36 @@ class Level1 extends Phaser.Scene {
             '../../assets/enemy.png',
             { frameWidth: 32, frameHeight: 48 }
         );
+        this.load.image('heart', '../../assets/Corazonlleno.png');
+        this.load.image('emptyHeart', '../../assets/CorazonVacio.png');
     }
-
     // Metodo que se llama cuando se crea la escena y la renderiza
     create() {
-        
-        this._createWorld();
         this._createGround();
+        this._createWorld();
+        
         this._cretatePlatforms();
         this._createPlayer();
         this._createEnemys();
         this._createStars();
-        this._createScoreText();
         this._createCursors();
         this._createCamera();
-        // TODO si ya no vamos a querer bombas, eliminarlas totalmente del codigo
-        this._createBombs();
         this._createIntroText();
         this._createColliders();
+
+        // Tema UI
+        this._createUIElements();
 
 
     }
 
     // Metodo que se llama cada que se refresca la pantalla
     update() {
+        if (this.isPaused) return;
         if (this.gameOver) return;
         this.player.handleMov(this.cursors);
         this.enemys.children.iterate(enemy => enemy.handleMov());
-
+        this._updateDashCooldownUI();
         if (this.score >= 10 && this.player.x >= 1950) {
             this.physics.pause();
             this.time.removeAllEvents();
@@ -126,8 +139,30 @@ class Level1 extends Phaser.Scene {
         });
     }
     _createWorld() {
-        this.add.image(1590, 220, 'forest');
-        this.add.image(240, 220, 'forest');
+        // Parallax efect
+
+        // this.add.image(1590, 220, 'forest');
+        // this.add.image(240, 220, 'forest');
+
+        this.add.image(620,310,'layer1').setScrollFactor(0);
+        this.add.image(1625,310,'layer1').setScrollFactor(0);
+
+        this.add.image(620,310,'layer2').setScrollFactor(0.2);
+        this.add.image(1840,310,'layer2').setScrollFactor(0.2);
+
+        this.add.image(620,310,'layer3').setScrollFactor(0.4);
+        this.add.image(1860,310,'layer3').setScrollFactor(0.4);
+
+        this.add.image(620,310,'layer4').setScrollFactor(0.6);
+        this.add.image(1860,310,'layer4').setScrollFactor(0.6);
+
+        this.add.image(620,320,'layer5').setScrollFactor(0.8);
+        this.add.image(1860,320,'layer5').setScrollFactor(0.8);
+
+        this.add.image(620,320,'layer6').setScrollFactor(1);
+        this.add.image(1860,320,'layer6').setScrollFactor(1);
+
+
     }
 
     _cretatePlatforms() {
@@ -162,19 +197,19 @@ class Level1 extends Phaser.Scene {
         this.enemys = this.physics.add.group();
         // Creacion periodica de enemigos cada 3 segundos (cambiar si es necesario):
         const spawnPoints = [
-            { x: 784, y: 180 },
-            { x: 784, y: 360 },
             { x: 16, y: 210 },
-            { x: 784, y: 512 }
+            { x: 16, y: 460 },
+            { x: 1084, y: 60 },
+            { x: 1982, y: 160 },
         ]
-        // this.time.addEvent({
-        //     delay: 1000,
-        //     callback: () => {
-        //         let spw = spawnPoints[Math.floor(Math.random() * 4)];
-        //         this.enemys.add(new Enemy(this, spw.x, spw.y, this.player))
-        //     },
-        //     loop: true,
-        // });
+        this.time.addEvent({
+            delay: 1000,
+            callback: () => {
+                let spw = spawnPoints[Math.floor(Math.random() * 4)];
+                this.enemys.add(new Enemy(this, spw.x, spw.y, this.player))
+            },
+            loop: true,
+        });
     }
 
     _createStars() {
@@ -182,23 +217,11 @@ class Level1 extends Phaser.Scene {
         this.stars = this.physics.add.group();
     }
 
-    _createScoreText() {
-        // Texto
-        this.scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#fff' });
-        this.scoreText.setScrollFactor(0);
-    }
-
-
-    _createBombs() {
-        // Grupo de las bombas
-        this.bombs = this.physics.add.group();
-    }
-
     _createIntroText() {
         // Crear el texto en la pantalla
         let introText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY,
             'Level 1',
-            { fontSize: '64px', fill: '#ffffff' }
+            { fontFamily:'"Pixelify Sans"', fontSize: '64px', fill: '#ffffff' }
         ).setOrigin(0.5); // Centrar el texto
 
         // Aplicar un tween para desvanecerlo progresivamente
@@ -216,9 +239,6 @@ class Level1 extends Phaser.Scene {
         this.physics.add.collider(this.player, this.platforms);
         this.physics.add.collider(this.stars, this.ground);
         this.physics.add.collider(this.stars, this.platforms);
-        this.physics.add.collider(this.bombs, this.ground);
-        this.physics.add.collider(this.bombs, this.platforms);
-        this.physics.add.collider(this.player, this.bombs, this._hitBomb, null, this);
         this.physics.add.overlap(this.player, this.stars, this._collectStar, null, this);
         this.physics.add.collider(this.enemys, this.ground);
         this.physics.add.collider(this.enemys, this.platforms);
@@ -237,7 +257,8 @@ class Level1 extends Phaser.Scene {
             attack_left: Phaser.Input.Keyboard.KeyCodes.LEFT,
             attack_right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
             attack_up: Phaser.Input.Keyboard.KeyCodes.UP,
-            scape: Phaser.Input.Keyboard.KeyCodes.ESC
+            scape: Phaser.Input.Keyboard.KeyCodes.ESC,
+            shift: Phaser.Input.Keyboard.KeyCodes.SHIFT
         });
         this.cursors.scape.on("down", () => {
             this._handlePause();
@@ -256,12 +277,6 @@ class Level1 extends Phaser.Scene {
         this.score += 10;
         this.scoreText.setText('Score: ' + this.score);
         star.destroy();
-    }
-
-    _hitBomb(player, bomb) {
-        player.setTint(0xff0000);
-        player._stop();
-        this._onGameOver();
     }
 
     _activateInvincibility(player) {
@@ -286,7 +301,7 @@ class Level1 extends Phaser.Scene {
 
     _hitPlayer(player, enemy) {
 
-
+        this._updateHearts();
         if (this.hits === 2) {
             this._deadPlayer(player, enemy);
         } else {
@@ -323,7 +338,6 @@ class Level1 extends Phaser.Scene {
 
 
     _handlePause() {
-        console.log(this.isPaused)
         // Si no estaba previamente pausado, hacer pausa
         if (!this.isPaused) {
             this.physics.pause();
@@ -342,17 +356,17 @@ class Level1 extends Phaser.Scene {
 
 
 
-    // Creacion de Menus
+    // Creacion de Menus y UI
     _createMenuPause() {
         const mainCamara = this.cameras.main;
         const dispCentX = window.innerWidth / 2 + mainCamara.scrollX;
         const dispCentY = window.innerHeight / 2 + mainCamara.scrollY;
         // Capa de sombra que cubre toda la pantalla
         const sombra = this.add.rectangle(
-            mainCamara.scrollX + this.scale.width / 2,  
+            mainCamara.scrollX + this.scale.width / 2,
             mainCamara.scrollY + this.scale.height / 2,
             this.scale.width, this.scale.height,
-            0x000000, 0.8  
+            0x000000, 0.8
         ).setOrigin(0.5);
 
 
@@ -365,9 +379,9 @@ class Level1 extends Phaser.Scene {
         const text3 = this.add.text(btn1.x - 55, btn2.y - 16, "Restart", textStyle);
 
         // Contenedor
-        this.menuContainer = this.add.container(0, 0, [sombra, btn1, btn2, text1, text2, text3 ])
+        this.menuContainer = this.add.container(0, 0, [sombra, btn1, btn2, text1, text2, text3])
 
-        
+
         sombra.setDepth(0);
         this.menuContainer.setDepth(1);
 
@@ -387,27 +401,27 @@ class Level1 extends Phaser.Scene {
     }
 
     // Menu para el game Over
-    _createMenuGO(){
+    _createMenuGO() {
         const mainCamara = this.cameras.main;
         const dispCentX = window.innerWidth / 2 + mainCamara.scrollX;
         const dispCentY = window.innerHeight / 2 + mainCamara.scrollY;
         // Capa de sombra que cubre toda la pantalla
         const sombra = this.add.rectangle(
-            mainCamara.scrollX + this.scale.width / 2,  
+            mainCamara.scrollX + this.scale.width / 2,
             mainCamara.scrollY + this.scale.height / 2,
             this.scale.width, this.scale.height,
-            0x000000, 0.8  
+            0x000000, 0.8
         ).setOrigin(0.5);
         const textStyle = { fontSize: '32px', fill: "#fff" };
 
         // UI elements
         const title = this.add.text(dispCentX - 70, dispCentY - 200, "Game Over", textStyle);
         const btn = this.add.image(dispCentX + 20, dispCentY, 'button').setInteractive();
-        const text = this.add.text(dispCentX- 70, btn.y - 16, "Reiniciar", textStyle);
+        const text = this.add.text(dispCentX - 70, btn.y - 16, "Reiniciar", textStyle);
         // Contenedor
-        this.menuContainer = this.add.container(0, 0, [sombra, title, btn, text ])
+        this.menuContainer = this.add.container(0, 0, [sombra, title, btn, text])
 
-        
+
         sombra.setDepth(0);
         this.menuContainer.setDepth(1);
 
@@ -417,11 +431,73 @@ class Level1 extends Phaser.Scene {
 
 
     // Estoy pensandolo para que esta funcion mate a todos los menus, si el create no se puede al menos el destroy
-    _closeMenu(){
+    _closeMenu() {
         if (this.menuContainer) {
-            this.menuContainer.destroy(); 
+            this.menuContainer.destroy();
             this.menuContainer = null;
         }
+    }
+
+
+    _createUIElements() {
+        //Score del jugador
+        this.scoreText = this.add.text(16, 16, 'score: 0', {
+            fontFamily: '"Pixelify Sans"',
+            fontSize: '32px',
+            color: '#6a4952'
+        });
+        
+        
+        // colldown del dash
+        this.cooldownBar = this.add.graphics();
+        this.cooldownBar.fillStyle(0x6a4952, 1);
+        this.cooldownBar.fillRect(16, 50, 100, 15);
+        this.cooldownBar.setDepth(10);
+        // Nombre del jugador
+        this.playerAliasText = this.add.text(window.innerWidth - 150, 16, this.playerAlias, {
+            fontFamily: '"Pixelify Sans"',
+            fontSize: '32px',
+            color: '#6a4952'
+        });
+        this.playerAliasText.setScrollFactor(0);
+        // Corazones de Vida (Abajo del score)
+        this.heartDisplay = this.physics.add.staticGroup({
+            key: 'heart',
+            repeat: 2,
+            setXY: { x: window.innerWidth - 120, y: 60, stepX: 30 }
+        });
+
+
+        // Hacer que nada se mueva a pesar del scroll
+        this.cooldownBar.setScrollFactor(0);
+        this.scoreText.setScrollFactor(0);
+        this.heartDisplay.children.iterate(child => child.setScrollFactor(0));
+
+    }
+    _updateDashCooldownUI() {
+        let progress = this.player.getDashCooldwnProg();
+        this.cooldownBar.clear();
+        this.cooldownBar.fillStyle(0x6a4952, 1);
+        this.cooldownBar.fillRect(16, 50, 100 * progress, 15);
+    }
+
+    _updateHearts() {
+        let hearts = this.heartDisplay.getChildren();
+        // Encuentra el último corazón lleno, cambia a un corazón vacío y detiene el loop después de cambiar uno
+        for (let i = hearts.length - 1; i >= 0; i--) {
+            if (hearts[i].texture.key === 'heart') { 
+                hearts[i].setTexture('emptyHeart'); 
+                this.tweens.add({
+                    targets: hearts[i],
+                    alpha: 0, 
+                    yoyo: true, 
+                    repeat: 6, 
+                    duration: 150
+                });
+                break; 
+            }
+        }
+
     }
 }
 
