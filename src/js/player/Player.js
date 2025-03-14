@@ -1,10 +1,11 @@
 class Player extends AbsCharacter {
     constructor(scene, x, y) {
-        super(scene, x, y, 'dude');
-        this.nombreTextura = 'dude';
+        super(scene, x, y, 'idle');
+        this.nombreTextura = 'idle';
         this.leftAnim = 'left';
-        this.rightAnim = 'right';
+        this.rightAnim = 'run';
         this.turnAnim = 'turn';
+        this.attackAnim = 'attack';
         this.isAttacking = false;
         this.attacks = this.scene.physics.add.group();
         this.attackDir = '';
@@ -14,25 +15,38 @@ class Player extends AbsCharacter {
     }
 
     _createAnimations() {
+        
+        this.scene.anims.create({
+            key: this.attackAnim,
+            frames: this.scene.anims.generateFrameNumbers(this.attackAnim, { start: 0, end: 3 }),
+            frameRate: 10,
+            repeat: 0,
+        });
         this.scene.anims.create({
             key: this.leftAnim,
-            frames: this.scene.anims.generateFrameNumbers(this.nombreTextura, { start: 0, end: 3 }),
+            frames: this.scene.anims.generateFrameNumbers(this.rightAnim, { start: 0, end: 9 }),
             frameRate: 10,
             repeat: -1,
         });
 
         this.scene.anims.create({
             key: this.turnAnim,
-            frames: [{ key: this.nombreTextura, frame: 4 }],
-            frameRate: 20
+            frames: this.scene.anims.generateFrameNumbers(this.nombreTextura, { start: 0, end: 9 }),
+            frameRate: 10,
+            repeat: -1,
+           
         });
 
         this.scene.anims.create({
             key: this.rightAnim,
-            frames: this.scene.anims.generateFrameNumbers(this.nombreTextura, { start: 5, end: 8 }),
+            frames: this.scene.anims.generateFrameNumbers(this.rightAnim, { start: 0, end: 9 }),
             frameRate: 10,
-            repeat: -1
+            repeat: -1,
         });
+
+      
+
+        
 
     }
     handleMov(cursors) {
@@ -40,14 +54,19 @@ class Player extends AbsCharacter {
         const prevX = this.x;
         const prevY = this.y;
 
-        if (left.isDown) {
+        if (left.isDown && !this.isAttacking) {
+            
             this._movLeft();
         } else
-            if (right.isDown) {
+            if (right.isDown && !this.isAttacking) {
                 this._movRight();
-            } else this._stop();
+            }else if(!this.isAttacking && this.body.touching.down){
+                this._stop();
+                
+            }
         if (up.isDown && this.body.touching.down) {
             this._jump();
+
         }
         // Mover el ataque siguiendo al jugador
         if (this.isAttacking) {
@@ -55,8 +74,10 @@ class Player extends AbsCharacter {
         }
         if (attack_left.isDown) {
             this._attack('left');
+            this.flipX = true;
         } else if (attack_right.isDown) {
             this._attack('right');
+            this.flipX = false;
         } else if (attack_up.isDown) {
             this._attack('up');
         }
@@ -66,13 +87,26 @@ class Player extends AbsCharacter {
         this.attacks.children.iterate(child => {
             child.setVelocityX(this.body.velocity.x);
             child.setVelocityY(this.body.velocity.y);
-        })
+        });
     }
 
 
     _attack(direction) {
         if (this.isAttacking) return;
         this.isAttacking = true;
+        if (this.flipX) {
+        
+            this.setVelocityX(-10);
+            
+        }
+        else  {
+            this.setVelocityX(10);
+            
+        }
+
+
+        this.anims.play(this.attackAnim, true);
+
         // Configuraciones de la posicion y tamaño de las hitbox dependiendo de la direccion donde se ataca
         const hitboxConfig = {
             // WARNING: alch no entendi bien cual era la relacion entre el tamaño del hitbox y la 
@@ -108,12 +142,12 @@ class Player extends AbsCharacter {
 
         // Dependiendo de como se de la animacion de ataque y balanceo, se debe de cambiar estos dos timers
         // Tiempo que dura el ataque en milisegundos, despues de dichos, se destruye el ataque y se resetean atributos
-        this.scene.time.delayedCall(300, () => {
+        this.scene.time.delayedCall(400, () => {
             hitbox.forEach(e => e.destroy());
             this.attackDir = '';
         });
         // Tiempo hasta que se puede volver a atacar, se calcula como: este timer - timer anterior (por ejemplo: 1000 - 300 = 700 mSeg)
-        this.scene.time.delayedCall(1000, () => {
+        this.scene.time.delayedCall(700, () => {
             this.isAttacking = false;
         });
     }

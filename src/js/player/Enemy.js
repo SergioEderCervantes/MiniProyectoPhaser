@@ -5,6 +5,7 @@ class Enemy extends AbsCharacter {
         this.leftAnim = 'enemy_left';
         this.rightAnim = 'enemy_right';
         this.turnAnim = 'enemy_turn';
+        this.attackAnim = '';
         this._createAnimations();
         
         this.playerTarget = playerTarget;
@@ -22,8 +23,9 @@ class Enemy extends AbsCharacter {
 
         this.scene.anims.create({
             key: this.turnAnim,
-            frames: [{ key: this.nombreTextura, frame: 4 }],
-            frameRate: 20
+            frames: this.scene.anims.generateFrameNumbers(this.nombreTextura, { start: 4, end: 4 }),
+            frameRate: 10,
+            repeat: -1,
         });
 
         this.scene.anims.create({

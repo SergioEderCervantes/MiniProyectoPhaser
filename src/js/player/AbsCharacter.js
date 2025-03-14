@@ -17,6 +17,7 @@ class AbsCharacter extends Phaser.Physics.Arcade.Sprite{
         this.leftAnim = "";
         this.rightAnim = "";
         this.turnAnim = "";
+        this.attackAnim = "";
 
     }
 
@@ -25,26 +26,31 @@ class AbsCharacter extends Phaser.Physics.Arcade.Sprite{
     }
 
     _movRight(){
+        this.flipX = false;
         this.setVelocityX(this.velocityX);
         this.anims.play(this.rightAnim, true);
     }
 
     _movLeft(){
+        this.flipX = true;
         this.setVelocityX((this.velocityX * -1));
         this.anims.play(this.leftAnim,true);
     }
 
     _stop(){
         this.setVelocityX(0);
-        this.anims.play(this.turnAnim);
+
+        
+            this.anims.play(this.turnAnim, true);
+        
     }
 
     _jump(){
         this.setVelocityY(this.velocityY);
+     
     }
 
     _attack(){
-
     }
 
 

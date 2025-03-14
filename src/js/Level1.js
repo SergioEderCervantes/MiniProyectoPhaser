@@ -24,12 +24,50 @@ class Level1 extends Phaser.Scene {
         this.load.image('forest', '../../assets/forest.jpg');
         this.load.image('ground', '../../assets/platform.png');
         this.load.image('star', '../../assets/star.png');
+        this.load.image('platform', '../../assets/plank.png');
         this.load.image('bomb', '../../assets/bomb.png');
         this.load.image('button', '../../assets/btnPerdonJost.png')
-        this.load.spritesheet('dude',
-            '../../assets/dude.png',
-            { frameWidth: 32, frameHeight: 48 }
+        
+        this.load.spritesheet('idle',
+            '../../assets/player/_Idle.png',
+            { frameWidth: 120, frameHeight: 80 }
         );
+        this.load.spritesheet('attack',
+            '../../assets/player/_Attack.png',
+            { frameWidth: 120, frameHeight: 80 }
+        );
+        this.load.spritesheet('dash',
+            '../../assets/player/_Dash.png',
+            { frameWidth: 120, frameHeight: 80 }
+        );
+        this.load.spritesheet('jump',
+            '../../assets/player/_Jump.png',
+            { frameWidth: 120, frameHeight: 80 }
+        );
+        this.load.spritesheet('run',
+            '../../assets/player/_Run.png',
+            { frameWidth: 120, frameHeight: 80 }
+        );
+        // this.load.spritesheet('idle',
+        //     '../../assets/player/_idle.png',
+        //     { frameWidth: 120, frameHeight: 80 }
+        // );
+        // this.load.spritesheet('idle',
+        //     '../../assets/player/_idle.png',
+        //     { frameWidth: 120, frameHeight: 80 }
+        // );
+        // this.load.spritesheet('idle',
+        //     '../../assets/player/_idle.png',
+        //     { frameWidth: 120, frameHeight: 80 }
+        // );
+        // this.load.spritesheet('idle',
+        //     '../../assets/player/_idle.png',
+        //     { frameWidth: 120, frameHeight: 80 }
+        // );
+        // this.load.spritesheet('idle',
+        //     '../../assets/player/_idle.png',
+        //     { frameWidth: 120, frameHeight: 80 }
+        // );
         this.load.spritesheet('enemy',
             '../../assets/enemy.png',
             { frameWidth: 32, frameHeight: 48 }
@@ -38,8 +76,9 @@ class Level1 extends Phaser.Scene {
 
     // Metodo que se llama cuando se crea la escena y la renderiza
     create() {
-        this._createGround();
+        
         this._createWorld();
+        this._createGround();
         this._cretatePlatforms();
         this._createPlayer();
         this._createEnemys();
@@ -75,8 +114,16 @@ class Level1 extends Phaser.Scene {
     // Metodos auxiliares de la escena
 
     _createGround() {
-        this.ground = this.physics.add.staticGroup();
-        this.ground.create(400, 730, 'ground').setScale(10).refreshBody();
+        this.ground = this.physics.add.staticGroup({
+            key: 'ground',
+            repeat: 4,
+            setXY: { x: 0, y: 600, stepX: 576 }
+
+        });
+        this.ground.children.iterate((child) => {
+            child.setScale(2);
+            child.refreshBody();
+        });
     }
     _createWorld() {
         this.add.image(1590, 220, 'forest');
@@ -91,21 +138,23 @@ class Level1 extends Phaser.Scene {
         // Se crea en el x = 600, y = 400, se escala para que sea mas grande y siempre que se 
         // escale se debe de usar el refreshBody para que su colision se actualice
         this.platforms = this.physics.add.staticGroup();
-        this.platforms.create(600, 400, 'ground');
-        this.platforms.create(50, 250, 'ground');
-        this.platforms.create(750, 220, 'ground');
-        this.platforms.create(100, 500, 'ground');
-        this.platforms.create(2000, 200, 'ground');
-        this.platforms.create(1800, 460, 'ground');
-        this.platforms.create(1500, 300, 'ground');
-        this.platforms.create(1200, 100, 'ground');
-        this.platforms.create(1170, 490, 'ground');
+        this.platforms.create(600, 400, 'platform').setScale(3).refreshBody();
+        this.platforms.create(50, 250, 'platform').setScale(3).refreshBody();
+        this.platforms.create(750, 220, 'platform').setScale(3).refreshBody();
+        this.platforms.create(100, 500, 'platform').setScale(3).refreshBody();
+        this.platforms.create(2000, 200, 'platform').setScale(3).refreshBody();;
+        this.platforms.create(1800, 460, 'platform').setScale(3).refreshBody();;
+        this.platforms.create(1500, 300, 'platform').setScale(3).refreshBody();;
+        this.platforms.create(1200, 100, 'platform').setScale(3).refreshBody();;
+        this.platforms.create(1170, 490, 'platform').setScale(3).refreshBody();;
 
 
     }
 
     _createPlayer() {
-        this.player = new Player(this, 100, 400);
+        this.player = new Player(this, 90, 400);
+        this.player.setSize(24, 47);
+        this.player.setOffset(42, 35);
     }
 
     _createEnemys() {
@@ -118,14 +167,14 @@ class Level1 extends Phaser.Scene {
             { x: 16, y: 210 },
             { x: 784, y: 512 }
         ]
-        this.time.addEvent({
-            delay: 1000,
-            callback: () => {
-                let spw = spawnPoints[Math.floor(Math.random() * 4)];
-                this.enemys.add(new Enemy(this, spw.x, spw.y, this.player))
-            },
-            loop: true,
-        });
+        // this.time.addEvent({
+        //     delay: 1000,
+        //     callback: () => {
+        //         let spw = spawnPoints[Math.floor(Math.random() * 4)];
+        //         this.enemys.add(new Enemy(this, spw.x, spw.y, this.player))
+        //     },
+        //     loop: true,
+        // });
     }
 
     _createStars() {
