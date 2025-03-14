@@ -24,11 +24,11 @@ class Level2 extends Level1 {
         this.add.image(551,310,'layer2.3').setScrollFactor(0.8);
         this.add.image(1653,310,'layer2.3').setScrollFactor(0.8);
         
-        this.add.image(620,310,'layer5').setScrollFactor(0.8);
-        this.add.image(1860,310,'layer5').setScrollFactor(0.8);
+        this.add.image(620,300,'layer5').setScrollFactor(0.8);
+        this.add.image(1860,300,'layer5').setScrollFactor(0.8);
         
-        this.add.image(1860,320,'layer6').setScrollFactor(1);
-        this.add.image(620,320,'layer6').setScrollFactor(1);
+        this.add.image(1860,300,'layer6').setScrollFactor(1);
+        this.add.image(620,300,'layer6').setScrollFactor(1);
     }
 
     _createCamera() {

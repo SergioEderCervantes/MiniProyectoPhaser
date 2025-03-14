@@ -141,11 +141,11 @@ class Level1 extends Phaser.Scene {
         this.add.image(620,310,'layer4').setScrollFactor(0.6);
         this.add.image(1860,310,'layer4').setScrollFactor(0.6);
 
-        this.add.image(620,320,'layer5').setScrollFactor(0.8);
-        this.add.image(1860,320,'layer5').setScrollFactor(0.8);
+        this.add.image(620,300,'layer5').setScrollFactor(0.8);
+        this.add.image(1860,300,'layer5').setScrollFactor(0.8);
 
-        this.add.image(620,320,'layer6').setScrollFactor(1);
-        this.add.image(1860,320,'layer6').setScrollFactor(1);
+        this.add.image(620,300,'layer6').setScrollFactor(1);
+        this.add.image(1860,300,'layer6').setScrollFactor(1);
 
 
     }

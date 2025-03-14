@@ -143,7 +143,7 @@ class Player extends AbsCharacter {
     _attack(direction) {
         if (this.isAttacking) return;
         this.isAttacking = true;
-        if (this.flipX) {
+        if (direction === 'left') {
         
             this.setVelocityX(-30);
             
