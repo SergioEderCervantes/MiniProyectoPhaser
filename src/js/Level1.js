@@ -43,6 +43,10 @@ class Level1 extends Phaser.Scene {
             '../../assets/player/_Idle.png',
             { frameWidth: 120, frameHeight: 80 }
         );
+        this.load.spritesheet('die',
+            '../../assets/player/_Death.png',
+            { frameWidth: 120, frameHeight: 80 }
+        );
         this.load.spritesheet('attack',
             '../../assets/player/_Attack.png',
             { frameWidth: 120, frameHeight: 80 }
@@ -161,7 +165,7 @@ class Level1 extends Phaser.Scene {
         this.platforms.create(600, 400, 'platform').setScale(3).refreshBody();
         this.platforms.create(50, 250, 'platform').setScale(3).refreshBody();
         this.platforms.create(750, 220, 'platform').setScale(3).refreshBody();
-        this.platforms.create(100, 500, 'platform').setScale(3).refreshBody();
+        this.platforms.create(150, 450, 'platform').setScale(3).refreshBody();
         this.platforms.create(2000, 200, 'platform').setScale(3).refreshBody();;
         this.platforms.create(1800, 460, 'platform').setScale(3).refreshBody();;
         this.platforms.create(1500, 300, 'platform').setScale(3).refreshBody();;
@@ -187,14 +191,14 @@ class Level1 extends Phaser.Scene {
             { x: 1084, y: 60 },
             { x: 1982, y: 160 },
         ]
-        this.time.addEvent({
-            delay: 1000,
-            callback: () => {
-                let spw = spawnPoints[Math.floor(Math.random() * 4)];
-                this.enemys.add(new Enemy(this, spw.x, spw.y, this.player))
-            },
-            loop: true,
-        });
+        // this.time.addEvent({
+        //     delay: 1000,
+        //     callback: () => {
+        //         let spw = spawnPoints[Math.floor(Math.random() * 4)];
+        //         this.enemys.add(new Enemy(this, spw.x, spw.y, this.player))
+        //     },
+        //     loop: true,
+        // });
     }
 
     _createStars() {
@@ -296,10 +300,13 @@ class Level1 extends Phaser.Scene {
         }
     }
     _deadPlayer(player, enemy) {
+        
         player.setTint(0xff0000);
         player._stop();
         enemy._stop();
-        this._onGameOver();
+        
+            this._onGameOver();
+        
     }
 
     // WARNING: PORQUE CHINGADOS AQUI ME LO TOMA EN ORDEN INVERSO?????????
@@ -315,10 +322,15 @@ class Level1 extends Phaser.Scene {
 
 
     _onGameOver() {
+        this.player.death();
+        
         this.physics.pause();
         this.time.removeAllEvents();
         this.gameOver = true;
-        this._createMenuGO();
+        
+        this.time.delayedCall(2000, () => {
+            this._createMenuGO();
+        });
     }
 
 
