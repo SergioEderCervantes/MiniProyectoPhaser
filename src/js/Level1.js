@@ -20,6 +20,7 @@ class Level1 extends Phaser.Scene {
         this.heartDisplay = null;
         this.color = 0x6a4952;
         this.textColor = '#6a4952';
+        this.healthCooldown = false;
     }
 
 
@@ -34,12 +35,12 @@ class Level1 extends Phaser.Scene {
         this.load.image('layer5','../../assets/parallax_bg_lvl1/Hills Layer 05.png');
         this.load.image('layer6','../../assets/parallax_bg_lvl1/Hills Layer 06.png');
 
-        this.load.image('forest', '../../assets/forest.jpg');
         this.load.image('ground', '../../assets/platform.png');
         this.load.image('star', '../../assets/star.png');
         this.load.image('platform', '../../assets/plank.png');
-        this.load.image('bomb', '../../assets/bomb.png');
         this.load.image('button', '../../assets/btnPerdonJost.png')
+        this.load.image('heart', '../../assets/Corazonlleno.png');
+        this.load.image('emptyHeart', '../../assets/CorazonVacio.png');
         
         this.load.spritesheet('idle',
             '../../assets/player/_Idle.png',
@@ -60,18 +61,27 @@ class Level1 extends Phaser.Scene {
         this.load.spritesheet('run',
             '../../assets/player/_Run.png',
             { frameWidth: 120, frameHeight: 80 }
-        );
-         this.load.spritesheet('dash',
-             '../../assets/player/Dash.png',
-             { frameWidth: 120, frameHeight: 80 }
-        );
-        
+        );        
         this.load.spritesheet('enemy',
             '../../assets/enemy.png',
             { frameWidth: 32, frameHeight: 48 }
         );
-        this.load.image('heart', '../../assets/Corazonlleno.png');
-        this.load.image('emptyHeart', '../../assets/CorazonVacio.png');
+        this.load.spritesheet('eIdle',
+            '../../assets/enemy/Skeleton_Idle.png',
+            {frameWidth: 36, frameHeight: 48}
+        );
+        this.load.spritesheet('eWalk',
+            '../../assets/enemy/Skeleton_Walk.png',
+            {frameWidth: 32, frameHeight: 48}
+        );
+        this.load.spritesheet('eAttack',
+            '../../assets/enemy/Skeleton_Attack.png',
+            {frameWidth: 65, frameHeight: 56}
+        );
+        this.load.spritesheet('eDead',
+            '../../assets/enemy/Skeleton_Dead.png',
+            {frameWidth: 50, frameHeight: 48}
+        ); 
     }
     // Metodo que se llama cuando se crea la escena y la renderiza
     create() {
@@ -135,8 +145,8 @@ class Level1 extends Phaser.Scene {
         this.add.image(620,310,'layer4').setScrollFactor(0.6);
         this.add.image(1860,310,'layer4').setScrollFactor(0.6);
 
-        this.add.image(620,300,'layer5').setScrollFactor(0.8);
-        this.add.image(1860,300,'layer5').setScrollFactor(0.8);
+        this.add.image(620,300,'layer5').setScrollFactor(1);
+        this.add.image(1860,300,'layer5').setScrollFactor(1);
 
         this.add.image(620,300,'layer6').setScrollFactor(1);
         this.add.image(1860,300,'layer6').setScrollFactor(1);
@@ -182,10 +192,12 @@ class Level1 extends Phaser.Scene {
             { x: 1982, y: 160 },
         ]
         this.time.addEvent({
-            delay: 1000,
+            delay: 3000,
             callback: () => {
                 let spw = spawnPoints[Math.floor(Math.random() * 4)];
-                this.enemys.add(new Enemy(this, spw.x, spw.y, this.player))
+                let enemy = new Enemy(this, spw.x, spw.y, this.player);
+                enemy.setSize(36,48);
+                this.enemys.add(enemy)
             },
             loop: true,
         });
@@ -260,7 +272,7 @@ class Level1 extends Phaser.Scene {
 
     _activateInvincibility(player) {
         player.isInvincible = true;
-
+    
         this.tweens.add({
             targets: player,
             alpha: 0,
@@ -269,42 +281,45 @@ class Level1 extends Phaser.Scene {
             repeat: 14,
             yoyo: true
         });
-        this.physics.world.removeCollider(this.playerEnemyCollider);
-
-        this.time.delayedCall(3000, () => {
-            player.isInvincible = false;
-            this.playerEnemyCollider = this.physics.add.collider(this.player, this.enemys, this._hitPlayer, null, this);
-
-        });
+    
+        this.time.delayedCall(3000, () => player.isInvincible = false);
     }
+    
 
     _hitPlayer(player, enemy) {
-
-        this._updateHearts();
-        if (this.hits === 2) {
-            this._deadPlayer(player, enemy);
-        } else {
-            this.hits++;
-            enemy.destroy();
-            this._activateInvincibility(player); // Activar la inmunidad
-        }
+        if (this.healthCooldown || player.isInvincible || enemy.isDying) return;  
+        enemy.attack();
+        this._takeDamage(player, enemy);
     }
-    _deadPlayer(player, enemy) {
+    
+    
+    _takeDamage(player) {
+        this.healthCooldown = true;
+    
+        this.time.delayedCall(500, () => {
+            this._updateHearts();
+    
+            if (this.hits >= 2) {  // Usar operador de incremento
+                this._deadPlayer(player);
+            } else {
+                this.hits ++;
+                this._activateInvincibility(player);
+            }
+    
+            this.healthCooldown = false;
+        });
+    }
+    
+    _deadPlayer(player) {
         player.setTint(0xff0000);
         player._stop();
-        enemy._stop();
         this._onGameOver();
     }
 
     // WARNING: PORQUE CHINGADOS AQUI ME LO TOMA EN ORDEN INVERSO?????????
     // CREO QUE MAGICAMENTE SE ARREGLO NMMS
     _hitEnemy(attack, enemy) {
-        enemy.disableBody(true, true);
-        // Crear una estrella nueva
-        const star = this.physics.add.sprite(enemy.x, enemy.y, 'star');
-        this.stars.add(star);
-        star.setBounce(1);
-        enemy.destroy();
+        enemy.die();
     }
 
 
@@ -332,6 +347,7 @@ class Level1 extends Phaser.Scene {
         }
         this.isPaused = !this.isPaused;
     }
+
     _checkSwitchLvl(){
         if (this.score >= 10 && this.player.x >= 1950) {
             this.physics.pause();
@@ -471,21 +487,21 @@ class Level1 extends Phaser.Scene {
 
     _updateHearts() {
         let hearts = this.heartDisplay.getChildren();
-        // Encuentra el último corazón lleno, cambia a un corazón vacío y detiene el loop después de cambiar uno
-        for (let i = hearts.length - 1; i >= 0; i--) {
-            if (hearts[i].texture.key === 'heart') { 
-                hearts[i].setTexture('emptyHeart'); 
-                this.tweens.add({
-                    targets: hearts[i],
-                    alpha: 0, 
-                    yoyo: true, 
-                    repeat: 6, 
-                    duration: 150
-                });
-                break; 
-            }
+        
+        // Buscar el último corazón lleno
+        let lastHeart = hearts.reverse().find(h => h.texture.key === 'heart');
+        hearts.reverse();
+        if (lastHeart) {
+            lastHeart.setTexture('emptyHeart');
+            this.tweens.add({
+                targets: lastHeart,
+                alpha: 0,
+                yoyo: true,
+                repeat: 6,
+                duration: 150
+            });
         }
-
     }
+    
 }
 

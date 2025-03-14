@@ -53,15 +53,12 @@ class AbsCharacter extends Phaser.Physics.Arcade.Sprite{
 
     _stop(){
         this.setVelocityX(0);
-
-        
-            this.anims.play(this.turnAnim, true);
+        this.anims.play(this.turnAnim, true);
         
     }
 
     _jump(){
         this.setVelocityY(this.velocityY);
-     
     }
 
     _attack(){
