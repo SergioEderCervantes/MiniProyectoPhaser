@@ -486,3 +486,23 @@ class Level1 extends Phaser.Scene {
     }
 }
 
+
+function startGame() {
+    var config = {
+        type: Phaser.AUTO,
+        width: 2200,
+        height: 620,
+        physics: {
+            default: 'arcade',
+            arcade: {
+                gravity: { y: 300 },
+                debug: true
+            }
+        },
+        scene: [new Level1('Level1'), new Level2('Level2')]
+    };
+
+    return new Phaser.Game(config);
+}
+
+window.startGame = startGame
