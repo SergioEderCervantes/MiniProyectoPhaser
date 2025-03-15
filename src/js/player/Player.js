@@ -151,6 +151,7 @@ class Player extends AbsCharacter {
 
     _attack(direction) {
         if (this.isAttacking) return;
+
         this.isAttacking = true;
         if (direction === 'left') {
             this.setVelocityX(-50);
@@ -159,8 +160,6 @@ class Player extends AbsCharacter {
             this.setVelocityX(50);
             
         }
-        console.log(this.x);
-        console.log(this.y);
 
         this.anims.play(this.attackAnim, true);
 

@@ -13,6 +13,7 @@ class Enemy extends AbsCharacter {
         this.velocityY = -330;
         this.isAttacking = false;
         this.isDying = false;
+        this.ONLYONE = false;
     }
 
     static _createAnimations(scene){
@@ -83,23 +84,24 @@ class Enemy extends AbsCharacter {
         this.anims.play(this.attackAnim, true);
     
         this.once('animationcomplete', () => {
+            console.log("kesestoooo")
             this.y = originalY;
             this.isAttacking = false;
         });
     }
 
     die(){
+        if(this.isDying) return;
         this.isDying = true;
         this.setVelocityX(0);
         this.anims.play('enemy_dead', true);
         this.once('animationcomplete', (anim) => {
-            if (anim.key !== 'enemy_dead') return;
             this.disableBody(false, false);
             // Crear una estrella nueva
             const star = this.scene.physics.add.sprite(this.x, this.y, 'star');
             this.scene.stars.add(star);
             star.setBounce(1);
-            // this.destroy();
+            this.destroy();
             
         })
     }
