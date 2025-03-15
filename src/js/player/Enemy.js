@@ -42,7 +42,7 @@ class Enemy extends AbsCharacter {
         scene.anims.create({
             key: 'enemy_attack',
             frames: scene.anims.generateFrameNumbers('eAttack', { start: 0, end: 17 }),
-            frameRate: 30,
+            frameRate: 20,
             repeat: 0,
         });
         scene.anims.create({

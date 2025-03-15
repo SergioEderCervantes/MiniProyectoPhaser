@@ -1,5 +1,5 @@
 class Level1 extends Phaser.Scene {
-    constructor(key) {
+    constructor(key = "Level1") {
         super({ key: key });
         this.platforms = null;
         this.player = null;
@@ -381,7 +381,7 @@ class Level1 extends Phaser.Scene {
             this.time.removeAllEvents();
             this.cameras.main.fade(2000, 0, 0, 0);
             this.cameras.main.on('camerafadeoutcomplete', () => {
-                this.scene.start('Level2');
+                this.scene.start('Level2',{hits: this.hits, score: this.score});
             });
     
         }
@@ -544,7 +544,7 @@ function startGame() {
                 debug: true
             }
         },
-        scene: [new Level1('Level1'), new Level2('Level2')]
+        scene: [Level1, Level2]
     };
 
     return new Phaser.Game(config);

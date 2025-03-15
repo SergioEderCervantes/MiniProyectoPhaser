@@ -1,5 +1,5 @@
 class Level2 extends Level1 {
-    constructor(key) {
+    constructor(key = "Level2") {
         super(key);
         this.color = 0xffffff;
         this.textColor = '#ffffff';
@@ -11,6 +11,17 @@ class Level2 extends Level1 {
         this.load.image('layer2.2', '../../assets/parallax_bg_lvl2/background_layer_2.png');
         this.load.image('layer2.3', '../../assets/parallax_bg_lvl2/background_layer_3.png');
 
+    }
+
+    create(data){
+        super.create();
+        if(data){
+            this.hits = data.hits;
+            this.score = data.score;
+            console.log(`Recibido: Vida = ${this.hits}, Puntuación = ${this.score}`);
+            this.scoreText.setText('Score: ' + this.score);
+            this._updateHearts();
+        }
     }
 
     _cretatePlatforms() {
