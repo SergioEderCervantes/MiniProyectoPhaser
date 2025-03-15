@@ -1,18 +1,14 @@
-class structure extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, x, y, texture) {
-        super(scene, x, y, texture);
-        scene.add.existing(this);
-        scene.physics.add.existing(this);
-        this.setImmovable(true);
+class Structure {
+    constructor(scene, x, y, group, relImage) {
         this.health = 3; // La estructura puede recibir 3 ataques antes de ser destruida
-        this.spawnPoints = [
-            { x: 70, y: 210 },
-            { x: 1197, y: 140 },
-            { x: 1520, y: 535 },
-        ];
+        this.sprite = scene.add.sprite(x, y, 'spawn'); // Crear el sprite en la escena
+        group.add(this.sprite); // Agregar el sprite al grupo estático
+        this.relImage = relImage
+        scene.physics.add.existing(this.sprite, true); // Convierte el sprite en un objeto estático
+ 
     }
 
- 
+
     takeDamage() {
         this.health--;
         if (this.health <= 0) {
@@ -22,7 +18,8 @@ class structure extends Phaser.Physics.Arcade.Sprite {
 
     destroyStructure() {
         //this.spawnEvent.remove();
-        this.destroy();
+        this.relImage.setAlpha(0);
+        this.sprite.destroy();
     }
 }
 

@@ -482,12 +482,12 @@ class Level1 extends Phaser.Scene {
 
         // Crea el grupo de la UI y lo llena:
         const textStyle = { fontSize: '32px', fill: "#fff" };
-        const btn1 = this.add.image(dispCentX, dispCentY - 100, 'button').setInteractive();
-        const btn2 = this.add.image(dispCentX, dispCentY + 100, 'button').setInteractive();
         const text1 = this.add.text(dispCentX - 55, dispCentY - 300, "Paused", textStyle);
-        const text2 = this.add.text(btn1.x - 55, btn1.y - 16, "Resume", textStyle);
-        const text3 = this.add.text(btn1.x - 55, btn2.y - 16, "Restart", textStyle);
-
+        const text2 = this.add.text(dispCentX - 55, dispCentY - 116, "Resume", textStyle);
+        const text3 = this.add.text(dispCentX - 110, dispCentY + 85, "Back 2 Menu", textStyle);
+        const btn1 = this.add.rectangle(dispCentX, dispCentY - 100, text2.width + 70, 40, 0x343a40).setInteractive();
+        const btn2 = this.add.rectangle(dispCentX, dispCentY + 100, text3.width + 70, 40, 0x343a40).setInteractive();
+        
         // Contenedor
         this.menuContainer = this.add.container(0, 0, [sombra, btn1, btn2, text1, text2, text3])
         this._addHoverEffect(btn1);
@@ -503,9 +503,6 @@ class Level1 extends Phaser.Scene {
 
         btn2.on('pointerdown', () => {
             console.log('Reiniciando la escena');
-            // Aqui hay un error, cuando se hace reset de la escena los enemigos no aparecen, sin embargo
-            // si no estoy mal, se tiene que regresar al menu principal, no aqui, so lo dejare asi hasta estar seguros
-            // this.scene.restart();
             location.reload();
         });
 
@@ -527,8 +524,8 @@ class Level1 extends Phaser.Scene {
 
         // UI elements
         const title = this.add.text(dispCentX - 70, dispCentY - 200, "Game Over", textStyle);
-        const btn = this.add.image(dispCentX + 20, dispCentY, 'button').setInteractive();
-        const text = this.add.text(dispCentX - 150, btn.y - 16, "Volver al Menu Principal", textStyle);
+        const text = this.add.text(dispCentX - 110, dispCentY - 116, "Back 2 Menu", textStyle);
+        const btn = this.add.rectangle(dispCentX, dispCentY - 100, text.width + 70, 40, 0x343a40).setInteractive();
         // Contenedor
         this.menuContainer = this.add.container(0, 0, [sombra, title, btn, text])
         this._addHoverEffect(btn);
@@ -555,8 +552,8 @@ class Level1 extends Phaser.Scene {
 
         // UI elements
         const title = this.add.text(dispCentX - 150, dispCentY - 200, "Felicidades!! Has ganado", textStyle);
-        const btn = this.add.image(dispCentX + 20, dispCentY, 'button').setInteractive();
-        const text = this.add.text(dispCentX - 150, btn.y - 16, "Volver al Menu Principal", textStyle);
+        const text = this.add.text(dispCentX - 150, dispCentY - 100, "Back 2 Menu", textStyle);
+        const btn = this.add.rectangle(dispCentX, dispCentY - 100, text.width + 70, 40, 0x6666ff).setInteractive();;
         // Contenedor
         this.menuContainer = this.add.container(0, 0, [sombra, title, btn, text])
         this._addHoverEffect(btn);
@@ -577,7 +574,7 @@ class Level1 extends Phaser.Scene {
 
     _addHoverEffect(button) {
         button.on('pointerover', () => {
-            button.setTint(0xaaaaaa); 
+            button.setTint(0xbbbbbb); 
         });
     
         button.on('pointerout', () => {
@@ -618,7 +615,6 @@ class Level1 extends Phaser.Scene {
             setXY: { x: window.innerWidth - 120, y: 60, stepX: 30 }
         });
 
-
         // Hacer que nada se mueva a pesar del scroll
         this.cooldownBar.setScrollFactor(0);
         this.scoreText.setScrollFactor(0);
@@ -641,7 +637,7 @@ class Level1 extends Phaser.Scene {
 
         // Fecha
         const date = new Date().toLocaleDateString();
-        this.dateText = this.add.text(180,16,  date,fontStyle).setScrollFactor(0);
+        this.dateText = this.add.text(250,16,  date,fontStyle).setScrollFactor(0);
     }
     _updateDashCooldownUI() {
         let progress = this.player.getDashCooldwnProg();
