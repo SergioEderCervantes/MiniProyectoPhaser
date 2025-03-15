@@ -8,26 +8,57 @@ class Level2 extends Level1 {
         this.load.image('layer2.1', '../../assets/parallax_bg_lvl2/background_layer_1.png');
         this.load.image('layer2.2', '../../assets/parallax_bg_lvl2/background_layer_2.png');
         this.load.image('layer2.3', '../../assets/parallax_bg_lvl2/background_layer_3.png');
+        this.load.image('spawn', '../../assets/tiles/spawn.png');
+        this.load.image('blanco', '../../assets/tiles/blanco.png');
+        this.load.image('fogata', '../../assets/tiles/fogata.png');
+        this.load.image('suelo', '../../assets/tiles/suelo.png');
+        this.load.image('troncos', '../../assets/tiles/troncos.png');
+        this.load.image('tumbas', '../../assets/tiles/tumbas.png');
+        this.load.image('yunke', '../../assets/tiles/yunke.png');
+        
 
     }
 
     _cretatePlatforms() {
         this.platforms = this.physics.add.staticGroup();
-        this.platforms.create(600, 400, 'platform').setScale(3).refreshBody();
-        this.platforms.create(800, 400, 'platform').setScale(3).refreshBody();
-        this.platforms.create(50, 250, 'platform').setScale(3).refreshBody();
-        this.platforms.create(750, 220, 'platform').setScale(3).refreshBody();
-        this.platforms.create(150, 450, 'platform').setScale(3).refreshBody();
-        this.platforms.create(1900, 200, 'platform').setScale(3).refreshBody();
-        this.platforms.create(1600, 300, 'platform').setScale(3).refreshBody();
-        this.platforms.create(1200, 100, 'platform').setScale(3).refreshBody();
-        this.platforms.create(1190, 425, 'platform').setScale(3).refreshBody();
-        this.platforms.create(1260, 425, 'platform').setScale(3).refreshBody();
-        this.platforms.create(1926.5, 365, 'platformw').setScale(3).refreshBody();
-        this.platforms.create(1910, 125, 'wall').flipX = true;
-        this.platforms.create(1915, 500, 'rocks');
 
-        this.add.image(1880, 525, 'back');
+        
+        this.platforms.create(50, 250, 'platform').setScale(3).refreshBody();
+        this.platforms.create(250, 250, 'platform').setScale(3).refreshBody();
+        this.platforms.create(500, 400, 'platform').setScale(3).refreshBody();
+        this.platforms.create(750, 220, 'platform').setScale(3).refreshBody();
+        this.platforms.create(700, 400, 'platform').setScale(3).refreshBody();
+        this.platforms.create(1160, 430, 'platform').setScale(3).refreshBody();
+        this.platforms.create(1200, 180, 'platform').setScale(3).refreshBody();
+        this.platforms.create(1260, 430, 'platform').setScale(3).refreshBody();
+        this.platforms.create(1400, 180, 'platform').setScale(3).refreshBody();
+        this.platforms.create(1630, 330, 'platform').setScale(3).refreshBody();
+        this.platforms.create(1900, 200, 'platform').setScale(3).refreshBody();
+        this.platforms.create(1950, 350, 'platformw').setScale(3).refreshBody();
+        this.platforms.create(1950, 125, 'platformw').setScale(3).refreshBody();
+        
+        
+        this.add.image(140, 222, 'fogata');//+140x +29y
+        this.add.image(70, 214, 'blanco').flipX = true;//+70x +21y
+        this.add.image(0, 212, 'troncos');//0x +19y
+        this.add.image(230, 211, 'tumbas');//+230x +18y
+        this.add.image(30, 224, 'yunke');//+30x +31y
+        this.add.image(220, 189, 'spawn');//+220x -4y
+
+        this.add.image(1540, 555, 'fogata');//+140x
+        this.add.image(1470, 547, 'blanco');//+70x
+        this.add.image(1400, 545, 'troncos');//0x
+        this.add.image(1630, 544, 'tumbas');//+230x
+        this.add.image(1430, 557, 'yunke');//+30x
+        this.add.image(1620, 522, 'spawn');//+220x
+        
+        this.add.image(1370, 152, 'fogata');//+140x
+        this.add.image(1200, 144, 'blanco').flipX=true;//+70x
+        this.add.image(1460, 141, 'tumbas');//+230x
+        this.add.image(1450, 119, 'spawn');//+220x
+
+        this.add.image(1800, 560, 'cartel');
+
     
     }
     _createWorld() {
@@ -45,8 +76,7 @@ class Level2 extends Level1 {
         this.add.image(620,300,'layer5').setScrollFactor(0.8);
         this.add.image(1860,300,'layer5').setScrollFactor(0.8);
         
-        this.add.image(1860,300,'layer6').setScrollFactor(1);
-        this.add.image(620,300,'layer6').setScrollFactor(1);
+       
     }
 
     _createCamera() {
@@ -73,6 +103,13 @@ class Level2 extends Level1 {
             onComplete: () => { introText.destroy(); } // Elimina el texto después de desvanecerse
         });
     }
+    
+    _createCave(){
+        this.add.image(1860,300,'layer6').setScrollFactor(1);
+        this.add.image(620,300,'layer6').setScrollFactor(1);
+    }
+    
+    
 
 }
 

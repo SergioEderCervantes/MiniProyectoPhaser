@@ -37,13 +37,12 @@ class Level1 extends Phaser.Scene {
         this.load.image('star', '../../assets/star.png');
         this.load.image('platform', '../../assets/plank.png');
         this.load.image('platformw', '../../assets/plankwall.png');
-        this.load.image('wall', '../../assets/wall.png');
         this.load.image('bomb', '../../assets/bomb.png');
         this.load.image('button', '../../assets/btnPerdonJost.png')
         this.load.image('back', '../../assets/cave.png')
         this.load.image('front', '../../assets/cavef.png')
         this.load.image('rocks', '../../assets/rocks.png')
-        
+        this.load.image('cartel', '../../assets/tiles/cartel.png')
         this.load.spritesheet('idle',
             '../../assets/player/_Idle.png',
             { frameWidth: 120, frameHeight: 80 }
@@ -60,18 +59,11 @@ class Level1 extends Phaser.Scene {
             '../../assets/player/_Dash.png',
             { frameWidth: 120, frameHeight: 80 }
         );
-        this.load.spritesheet('jump',
-            '../../assets/player/_Jump.png',
-            { frameWidth: 120, frameHeight: 80 }
-        );
         this.load.spritesheet('run',
             '../../assets/player/_Run.png',
             { frameWidth: 120, frameHeight: 80 }
         );
-         this.load.spritesheet('dash',
-             '../../assets/player/Dash.png',
-             { frameWidth: 120, frameHeight: 80 }
-        );
+        
         
         this.load.spritesheet('enemy',
             '../../assets/enemy.png',
@@ -79,6 +71,15 @@ class Level1 extends Phaser.Scene {
         );
         this.load.image('heart', '../../assets/Corazonlleno.png');
         this.load.image('emptyHeart', '../../assets/CorazonVacio.png');
+
+        this.load.audio('game', '../../assets/music/game.ogg');
+        this.load.audio('win', '../../assets/music/win.mp3');
+        this.load.audio('next', '../../assets/music/next.mp3');
+        this.load.audio('menu', '../../assets/music/menu.mp3');
+        this.load.audio('lose', '../../assets/music/lose.wav');
+        this.load.audio('coin', '../../assets/music/coin.mp3');
+        this.load.audio('special', '../../assets/music/special_item.mp3');
+
     }
     // Metodo que se llama cuando se crea la escena y la renderiza
     create() {
@@ -97,8 +98,16 @@ class Level1 extends Phaser.Scene {
 
         // Tema UI
         this._createUIElements();
-
-
+        this.next = this.sound.add('next', { volume: 0.5 });
+        this.win = this.sound.add('win');
+        this.menu = this.sound.add('menu', { loop: true, volume: 0.5 });
+        this.loseSound = this.sound.add('lose', { volume: 0.5 });
+        this.itemSound = this.sound.add('coin', { volume:
+            0.2 });
+        this.specialItemSound = this.sound.add('special');
+        this.gameSound = this.sound.add('game', { loop: true, volume: 0.4 });
+        this.gameSound.play();
+        
     }
 
     // Metodo que se llama cada que se refresca la pantalla
@@ -108,11 +117,13 @@ class Level1 extends Phaser.Scene {
         this.player.handleMov(this.cursors);
         this.enemys.children.iterate(enemy => enemy.handleMov());
         this._updateDashCooldownUI();
-        if (this.score >= 10 && this.player.x >= 1950) {
+        if ( this.player.x >= 1950) {
             this.physics.pause();
             this.time.removeAllEvents();
             this.cameras.main.fade(2000, 0, 0, 0);
             this.cameras.main.on('camerafadeoutcomplete', () => {
+                this.gameSound.stop();
+                this.next.play();
                 this.scene.start('Level2');
             });
 
@@ -178,9 +189,10 @@ class Level1 extends Phaser.Scene {
         this.platforms.create(1190, 425, 'platform').setScale(3).refreshBody();
         this.platforms.create(1260, 425, 'platform').setScale(3).refreshBody();
         this.platforms.create(1950, 358, 'platformw').setScale(3).refreshBody();
-        this.platforms.create(1934, 125, 'wall').flipX = true;
+        this.platforms.create(1950, 125, 'platformw').setScale(3).refreshBody();
         this.platforms.create(1915, 500, 'rocks');
 
+        this.add.image(1760, 560, 'cartel');
         this.add.image(1880, 530, 'back');
 
     }
@@ -201,14 +213,14 @@ class Level1 extends Phaser.Scene {
             { x: 1197, y: 55 },
             { x: 1520, y: 535 },
         ]
-      this.time.addEvent({
-          delay: 1000,
-          callback: () => {
-              let spw = spawnPoints[Math.floor(Math.random() * 4)];
-              this.enemys.add(new Enemy(this, spw.x, spw.y, this.player))
-          },
-          loop: true,
-      });
+    //   this.time.addEvent({
+    //       delay: 1000,
+    //       callback: () => {
+    //           let spw = spawnPoints[Math.floor(Math.random() * 4)];
+    //           this.enemys.add(new Enemy(this, spw.x, spw.y, this.player))
+    //       },
+    //       loop: true,
+    //   });
     }
 
     _createStars() {
@@ -284,6 +296,8 @@ class Level1 extends Phaser.Scene {
         this.score += 10;
         this.scoreText.setText('Score: ' + this.score);
         star.destroy();
+
+        this.itemSound.play();
     }
 
     _activateInvincibility(player) {
@@ -346,6 +360,8 @@ class Level1 extends Phaser.Scene {
         this.time.removeAllEvents();
         this.gameOver = true;
         
+        this.gameSound.stop();
+        this.loseSound.play();
         this.time.delayedCall(2000, () => {
             this._createMenuGO();
         });
