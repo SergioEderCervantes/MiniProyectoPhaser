@@ -344,15 +344,13 @@ class Level1 extends Phaser.Scene {
         enemy.die();
     }
 
-
     _onGameOver() {
         this.player.death();
-        // IMPORTANT: aqui se puede sacar el puntaje y el nombre del jugador para mandarlo al localstorage
         
         this.physics.pause();
         this.time.removeAllEvents();
         this.gameOver = true;
-        
+
         this.time.delayedCall(2000, () => {
             this._createMenuGO();
         });
