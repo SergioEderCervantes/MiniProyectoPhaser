@@ -3,6 +3,7 @@ class Level2 extends Level1 {
         super(key);
         this.color = 0xffffff;
         this.textColor = '#ffffff';
+        this.playerAlias = verifiedAlias;
     }
 
     preload() {
@@ -20,7 +21,9 @@ class Level2 extends Level1 {
             this.score = data.score;
             console.log(`Recibido: Vida = ${this.hits}, Puntuación = ${this.score}`);
             this.scoreText.setText('Score: ' + this.score);
-            this._updateHearts();
+            for (let i = 0; i < this.hits; i++) {
+                this._updateHearts();
+            }
         }
     }
 

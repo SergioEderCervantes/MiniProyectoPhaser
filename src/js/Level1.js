@@ -15,7 +15,7 @@ class Level1 extends Phaser.Scene {
         this.menuContainer = null;
         this.dashCooldownBar = null;
         // TODO: cuando se conecte con el menu playerAlias no sera necesario, o si si va a guardar el valor de lo que ponga el usuario en el menu
-        this.playerAlias = "Skorge";
+        this.playerAlias = verifiedAlias;
         this.playerAliasText = null;
         this.heartDisplay = null;
         this.color = 0x6a4952;
@@ -347,6 +347,7 @@ class Level1 extends Phaser.Scene {
 
     _onGameOver() {
         this.player.death();
+        // IMPORTANT: aqui se puede sacar el puntaje y el nombre del jugador para mandarlo al localstorage
         
         this.physics.pause();
         this.time.removeAllEvents();
@@ -472,7 +473,7 @@ class Level1 extends Phaser.Scene {
 
     _createUIElements() {
         //Score del jugador
-        this.scoreText = this.add.text(16, 16, 'score: 0', {
+        this.scoreText = this.add.text(16, 16, 'Score: 0', {
             fontFamily: '"Pixelify Sans"',
             fontSize: '32px',
             color: this.textColor
