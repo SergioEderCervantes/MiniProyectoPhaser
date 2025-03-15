@@ -140,7 +140,11 @@ class Level2 extends Level1 {
         this.add.image(620,300,'layer6').setScrollFactor(1);
     }
     
-    
+    _checkSwitchLvl(){
+        if(this.score >= 0){
+            this._win();
+        }
+    }
 
 }
 
