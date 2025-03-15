@@ -11,16 +11,19 @@ class Level1 extends Phaser.Scene {
         this.scoreText = null;
         this.gameOver = false;
         this.isPaused = false;
-        this.playerEnemyCollider = null;
         this.menuContainer = null;
         this.dashCooldownBar = null;
-        // TODO: cuando se conecte con el menu playerAlias no sera necesario, o si si va a guardar el valor de lo que ponga el usuario en el menu
+        this.heartsGroup = null;
+        this.gemGroup = null;
         this.playerAlias = verifiedAlias;
         this.playerAliasText = null;
         this.heartDisplay = null;
         this.color = 0x6a4952;
         this.textColor = '#6a4952';
         this.healthCooldown = false;
+        this.timer = 0;
+        this.timerText = null;
+        this.isTimerActive = false;
     }
 
 
@@ -28,12 +31,12 @@ class Level1 extends Phaser.Scene {
 
     // Metodo para cargar todos los assets y guardarlos en forma clave-valor
     preload() {
-        this.load.image('layer1','../../assets/parallax_bg_lvl1/Hills Layer 01.png');
-        this.load.image('layer2','../../assets/parallax_bg_lvl1/Hills Layer 02.png');
-        this.load.image('layer3','../../assets/parallax_bg_lvl1/Hills Layer 03.png');
-        this.load.image('layer4','../../assets/parallax_bg_lvl1/Hills Layer 04.png');
-        this.load.image('layer5','../../assets/parallax_bg_lvl1/Hills Layer 05.png');
-        this.load.image('layer6','../../assets/parallax_bg_lvl1/Hills Layer 06.png');
+        this.load.image('layer1', '../../assets/parallax_bg_lvl1/Hills Layer 01.png');
+        this.load.image('layer2', '../../assets/parallax_bg_lvl1/Hills Layer 02.png');
+        this.load.image('layer3', '../../assets/parallax_bg_lvl1/Hills Layer 03.png');
+        this.load.image('layer4', '../../assets/parallax_bg_lvl1/Hills Layer 04.png');
+        this.load.image('layer5', '../../assets/parallax_bg_lvl1/Hills Layer 05.png');
+        this.load.image('layer6', '../../assets/parallax_bg_lvl1/Hills Layer 06.png');
 
         this.load.image('ground', '../../assets/platform.png');
         this.load.image('star', '../../assets/star.png');
@@ -46,7 +49,7 @@ class Level1 extends Phaser.Scene {
         this.load.image('rocks', '../../assets/rocks.png')
         this.load.image('heart', '../../assets/Corazonlleno.png');
         this.load.image('emptyHeart', '../../assets/CorazonVacio.png');
-        
+        this.load.image('heartObj', '../../assets/objetcs/heartObj.png');
         this.load.spritesheet('idle',
             '../../assets/player/_Idle.png',
             { frameWidth: 120, frameHeight: 80 }
@@ -70,33 +73,36 @@ class Level1 extends Phaser.Scene {
         this.load.spritesheet('run',
             '../../assets/player/_Run.png',
             { frameWidth: 120, frameHeight: 80 }
-        );        
+        );
         this.load.spritesheet('enemy',
             '../../assets/enemy.png',
             { frameWidth: 32, frameHeight: 48 }
         );
         this.load.spritesheet('eIdle',
             '../../assets/enemy/Skeleton_Idle.png',
-            {frameWidth: 36, frameHeight: 48}
+            { frameWidth: 36, frameHeight: 48 }
         );
         this.load.spritesheet('eWalk',
             '../../assets/enemy/Skeleton_Walk.png',
-            {frameWidth: 32, frameHeight: 48}
+            { frameWidth: 32, frameHeight: 48 }
         );
         this.load.spritesheet('eAttack',
             '../../assets/enemy/Skeleton_Attack.png',
-            {frameWidth: 65, frameHeight: 56}
+            { frameWidth: 65, frameHeight: 56 }
         );
         this.load.spritesheet('eDead',
             '../../assets/enemy/Skeleton_Dead.png',
-            {frameWidth: 50, frameHeight: 48}
-        ); 
+            { frameWidth: 50, frameHeight: 48 }
+        );
+        this.load.spritesheet('gem', '../../assets/objetcs/gemSprite.png',
+            { frameWidth: 23, frameHeight: 27 }
+        );
     }
     // Metodo que se llama cuando se crea la escena y la renderiza
     create() {
         this._createGround();
         this._createWorld();
-        
+
         this._cretatePlatforms();
         this._createPlayer();
         this._createEnemys();
@@ -105,8 +111,9 @@ class Level1 extends Phaser.Scene {
         this._createCursors();
         this._createCamera();
         this._createIntroText();
+        this._createHeartGroup();
+        this._createGemGroup();
         this._createColliders();
-
         // Tema UI
         this._createUIElements();
 
@@ -139,37 +146,23 @@ class Level1 extends Phaser.Scene {
     }
     _createWorld() {
         // Parallax efect
+        this.add.image(620, 310, 'layer1').setScrollFactor(0);
+        this.add.image(1625, 310, 'layer1').setScrollFactor(0);
 
-        // this.add.image(1590, 220, 'forest');
-        // this.add.image(240, 220, 'forest');
+        this.add.image(620, 310, 'layer2').setScrollFactor(0.2);
+        this.add.image(1840, 310, 'layer2').setScrollFactor(0.2);
 
-        this.add.image(620,310,'layer1').setScrollFactor(0);
-        this.add.image(1625,310,'layer1').setScrollFactor(0);
+        this.add.image(620, 310, 'layer3').setScrollFactor(0.4);
+        this.add.image(1860, 310, 'layer3').setScrollFactor(0.4);
 
-        this.add.image(620,310,'layer2').setScrollFactor(0.2);
-        this.add.image(1840,310,'layer2').setScrollFactor(0.2);
+        this.add.image(620, 310, 'layer4').setScrollFactor(0.6);
+        this.add.image(1860, 310, 'layer4').setScrollFactor(0.6);
 
-        this.add.image(620,310,'layer3').setScrollFactor(0.4);
-        this.add.image(1860,310,'layer3').setScrollFactor(0.4);
-
-        this.add.image(620,310,'layer4').setScrollFactor(0.6);
-        this.add.image(1860,310,'layer4').setScrollFactor(0.6);
-
-        this.add.image(620,300,'layer5').setScrollFactor(0.8);
-        this.add.image(1860,300,'layer5').setScrollFactor(0.8);
-
-
-
-
+        this.add.image(620, 300, 'layer5').setScrollFactor(0.8);
+        this.add.image(1860, 300, 'layer5').setScrollFactor(0.8);
     }
 
     _cretatePlatforms() {
-        // Se le asigna a las plataformas un grupo estatico (No se mueven ni afecta la gravedad
-        // pero interactuan con demas objetos);
-
-
-        // Se crea en el x = 600, y = 400, se escala para que sea mas grande y siempre que se 
-        // escale se debe de usar el refreshBody para que su colision se actualice
         this.platforms = this.physics.add.staticGroup();
         this.platforms.create(600, 400, 'platform').setScale(3).refreshBody();
         this.platforms.create(800, 400, 'platform').setScale(3).refreshBody();
@@ -210,7 +203,7 @@ class Level1 extends Phaser.Scene {
             callback: () => {
                 let spw = spawnPoints[Math.floor(Math.random() * 4)];
                 let enemy = new Enemy(this, spw.x, spw.y, this.player);
-                enemy.setSize(36,48);
+                enemy.setSize(36, 48);
                 this.enemys.add(enemy)
             },
             loop: true,
@@ -220,21 +213,21 @@ class Level1 extends Phaser.Scene {
     _createStars() {
         // Grupo estrellas
         this.stars = this.physics.add.group();
-        
+
 
     }
     _createCave() {
-        
+
         this.add.image(1915, 556, 'front');
         this.add.image(1820, 580, 'rocks').setScale(1.5);
-        this.add.image(620,305,'layer6').setScrollFactor(1.1);
-        this.add.image(1800,305,'layer6').setScrollFactor(1.1);
+        this.add.image(620, 305, 'layer6').setScrollFactor(1.1);
+        this.add.image(1800, 305, 'layer6').setScrollFactor(1.1);
     }
     _createIntroText() {
         // Crear el texto en la pantalla
         let introText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY,
             'Level 1',
-            { fontFamily:'"Pixelify Sans"', fontSize: '64px', fill: '#ffffff' }
+            { fontFamily: '"Pixelify Sans"', fontSize: '64px', fill: '#ffffff' }
         ).setOrigin(0.5); // Centrar el texto
 
         // Aplicar un tween para desvanecerlo progresivamente
@@ -247,6 +240,52 @@ class Level1 extends Phaser.Scene {
         });
     }
 
+    _createHeartGroup() {
+        this.heartsGroup = this.physics.add.group();
+        // generar corazones de forma aleatoria
+        this.time.addEvent({
+            // Solo se crean cada 30 a 40 segundos
+            delay: Phaser.Math.Between(30000, 40000),
+            callback: this.spawnHeart,
+            callbackScope: this,
+            loop: true
+        });
+    }
+
+    _createGemGroup() {
+        this.gemGroup = this.physics.add.group();
+        // Generar la geama de forma aleatoria
+        this.time.addEvent({
+            // Solo se crean cada 50 a 70 seg
+            delay: Phaser.Math.Between(50000, 70000),
+            callback: this.spawnGem,
+            callbackScope: this,
+            loop: true
+        });
+    }
+
+    spawnHeart() {
+        let x = Phaser.Math.Between(50, 1500);
+        let y = Phaser.Math.Between(50, 550);
+        let heart = new Heart(this, x, y);
+        this.heartsGroup.add(heart);
+    }
+
+    spawnGem() {
+        let x = Phaser.Math.Between(50, 1500);
+        let y = Phaser.Math.Between(50, 550);
+        let gem = new Gem(this, x, y);
+        this.gemGroup.add(gem);
+    }
+
+    collectHeart(player, heart) {
+        heart.onCollect();
+    }
+
+    collectGem(player, gem) {
+        gem.onCollect();
+    }
+
     _createColliders() {
         this.physics.add.collider(this.player, this.ground);
         this.physics.add.collider(this.player, this.platforms);
@@ -255,8 +294,17 @@ class Level1 extends Phaser.Scene {
         this.physics.add.overlap(this.player, this.stars, this._collectStar, null, this);
         this.physics.add.collider(this.enemys, this.ground);
         this.physics.add.collider(this.enemys, this.platforms);
-        this.playerEnemyCollider = this.physics.add.collider(this.player, this.enemys, this._hitPlayer, null, this);
+        this.physics.add.collider(this.player, this.enemys, this._hitPlayer, null, this);
+
         this.physics.add.overlap(this.player.attacks, this.enemys, this._hitEnemy, null, this);
+        this.physics.add.collider(this.heartsGroup, this.platforms);
+        this.physics.add.collider(this.heartsGroup, this.ground);
+        this.physics.add.collider(this.heartsGroup, this.player, this.collectHeart, null, this);
+
+        this.physics.add.collider(this.gemGroup, this.platforms);
+        this.physics.add.collider(this.gemGroup, this.ground);
+        this.physics.add.collider(this.gemGroup, this.player, this.collectGem, null, this);
+
     }
 
     _createCursors() {
@@ -294,7 +342,7 @@ class Level1 extends Phaser.Scene {
 
     _activateInvincibility(player) {
         player.isInvincible = true;
-    
+
         this.tweens.add({
             targets: player,
             alpha: 0,
@@ -303,36 +351,38 @@ class Level1 extends Phaser.Scene {
             repeat: 14,
             yoyo: true
         });
-    
+
         this.time.delayedCall(3000, () => player.isInvincible = false);
     }
-    
+
 
     _hitPlayer(player, enemy) {
-        if (this.healthCooldown || player.isInvincible || enemy.isDying) return;  
+        if (this.healthCooldown || player.isInvincible || enemy.isDying) return;
         enemy.attack();
         this._takeDamage(player, enemy);
     }
-    
-    
+
+
     _takeDamage(player) {
         this.healthCooldown = true;
-    
+
         this.time.delayedCall(500, () => {
-            this._updateHearts();
-    
+
             if (this.hits >= 2) {  // Usar operador de incremento
+                this.hits++;
+                this.updateHearts();
                 this._deadPlayer(player);
             } else {
-                this.hits ++;
+                this.hits++;
+                this.updateHearts();
                 this._activateInvincibility(player);
             }
-    
+
             this.healthCooldown = false;
         });
     }
     _deadPlayer(player, enemy) {
-        
+
         player.setTint(0xff0000);
         player._stop();
         this._onGameOver();
@@ -348,11 +398,11 @@ class Level1 extends Phaser.Scene {
     _onGameOver() {
         this.player.death();
         // IMPORTANT: aqui se puede sacar el puntaje y el nombre del jugador para mandarlo al localstorage
-        
+
         this.physics.pause();
         this.time.removeAllEvents();
         this.gameOver = true;
-        
+
         this.time.delayedCall(2000, () => {
             this._createMenuGO();
         });
@@ -376,15 +426,15 @@ class Level1 extends Phaser.Scene {
         this.isPaused = !this.isPaused;
     }
 
-    _checkSwitchLvl(){
+    _checkSwitchLvl() {
         if (this.score >= 10 && this.player.x >= 1950) {
             this.physics.pause();
             this.time.removeAllEvents();
             this.cameras.main.fade(2000, 0, 0, 0);
             this.cameras.main.on('camerafadeoutcomplete', () => {
-                this.scene.start('Level2',{hits: this.hits, score: this.score});
+                this.scene.start('Level2', { hits: this.hits, score: this.score });
             });
-    
+
         }
     }
 
@@ -478,8 +528,8 @@ class Level1 extends Phaser.Scene {
             fontSize: '32px',
             color: this.textColor
         });
-        
-        
+
+
         // colldown del dash
         this.cooldownBar = this.add.graphics();
         this.cooldownBar.fillStyle(this.color, 1);
@@ -505,6 +555,21 @@ class Level1 extends Phaser.Scene {
         this.scoreText.setScrollFactor(0);
         this.heartDisplay.children.iterate(child => child.setScrollFactor(0));
 
+        // Timer de las gemas
+        this.timerText = this.add.text(window.innerWidth / 2 - 200, 50, "", {
+            fontFamily: '"Pixelify Sans"',
+            fontSize: '20px',
+            color: this.textColor
+        }).setScrollFactor(0).setAlpha(0);
+
+        this.timer = 10.00
+        this.time.addEvent({
+            delay: 10, // Actualiza cada 10 ms para mostrar milisegundos
+            callback: this._updateTimer,
+            callbackScope: this,
+            loop: true
+        });
+
     }
     _updateDashCooldownUI() {
         let progress = this.player.getDashCooldwnProg();
@@ -513,24 +578,46 @@ class Level1 extends Phaser.Scene {
         this.cooldownBar.fillRect(16, 50, 100 * progress, 15);
     }
 
-    _updateHearts() {
+    updateHearts() {
         let hearts = this.heartDisplay.getChildren();
-        
-        // Buscar el último corazón lleno
-        let lastHeart = hearts.reverse().find(h => h.texture.key === 'heart');
-        hearts.reverse();
-        if (lastHeart) {
-            lastHeart.setTexture('emptyHeart');
-            this.tweens.add({
-                targets: lastHeart,
-                alpha: 0,
-                yoyo: true,
-                repeat: 6,
-                duration: 150
-            });
+        let maxLives = 3; // Número máximo de corazones
+
+
+        let filledHearts = maxLives - this.hits;
+
+        hearts.forEach((heart, index) => {
+            if (index < filledHearts) {
+                heart.setTexture('heart'); // Corazón lleno
+                heart.setAlpha(1);
+            } else {
+                heart.setTexture('emptyHeart'); // Corazón vacío
+                this.tweens.add({
+                    targets: heart,
+                    alpha: 0,
+                    yoyo: true,
+                    repeat: 6,
+                    duration: 150
+                });
+            }
+        });
+    }
+    startTimer() {
+        this.timer = 10.00;
+        this.isTimerActive = true;
+        this.timerText.setAlpha(1); // Mostrar el texto
+    }
+    _updateTimer() {
+        if (!this.isTimerActive) return
+        this.timer -= 0.01; // Reducir tiempo
+
+        if (this.timer <= 0) {
+            this.timer = 10.00;
+            this.isTimerActive = false;
+            this.timerText.setAlpha(0); // Ocultar el texto
+        } else {
+            this.timerText.setText(`Ha aparecido una gema! desaparecerá en: ${this.timer.toFixed(2)}`);
         }
     }
-    
 }
 
 function startGame() {

@@ -8,7 +8,9 @@ class AbsCharacter extends Phaser.Physics.Arcade.Sprite{
         
         // Configurar propiedades físicas
         this.setCollideWorldBounds(true);
-        this.setBounce(0.02);
+        this.scene.physics.world.once("worldstep", () => {
+            this.setBounce(0.2);
+        });
         
         
         this.velocityX = 160;
