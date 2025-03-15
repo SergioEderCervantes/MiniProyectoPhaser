@@ -125,9 +125,8 @@ class Level1 extends Phaser.Scene {
         this.win = this.sound.add('win');
         this.menu = this.sound.add('menu', { loop: true, volume: 0.5 });
         this.loseSound = this.sound.add('lose', { volume: 0.5 });
-        this.itemSound = this.sound.add('coin', { volume:
-            0.2 });
-        this.specialItemSound = this.sound.add('special');
+        this.itemSound = this.sound.add('coin', { volume: 0.2 });
+        this.specialItemSound = this.sound.add('special', { volume: 0.3 });
         this.gameSound = this.sound.add('game', { loop: true, volume: 0.4 });
         this.gameSound.play();
         
@@ -142,9 +141,7 @@ class Level1 extends Phaser.Scene {
         this._updateDashCooldownUI();
         this._checkSwitchLvl();
         // Prueba para crear la pantalla de ganador
-        if(this.score >= 1000){
-
-        }
+     
 
     }
 
@@ -176,8 +173,8 @@ class Level1 extends Phaser.Scene {
         this.add.image(620, 310, 'layer4').setScrollFactor(0.6);
         this.add.image(1860, 310, 'layer4').setScrollFactor(0.6);
 
-        this.add.image(620, 300, 'layer5').setScrollFactor(0.8);
-        this.add.image(1860, 300, 'layer5').setScrollFactor(0.8);
+        this.add.image(620, 300, 'layer5').setScrollFactor(1);
+        this.add.image(1860, 300, 'layer5').setScrollFactor(1);
     }
 
     _cretatePlatforms() {
@@ -282,7 +279,11 @@ class Level1 extends Phaser.Scene {
             loop: true
         });
     }
-
+    spawnEnemy(x, y) {
+        let enemy = new Enemy(this, x, y, this.player);
+        enemy.setSize(36, 48);
+        this.enemys.add(enemy);
+    }
     spawnHeart() {
         let x = Phaser.Math.Between(50, 1500);
         let y = Phaser.Math.Between(50, 550);
@@ -298,11 +299,14 @@ class Level1 extends Phaser.Scene {
     }
 
     collectHeart(player, heart) {
+        this.specialItemSound.play();
         heart.onCollect();
     }
 
     collectGem(player, gem) {
         gem.onCollect();
+        this.specialItemSound.play();
+
     }
 
     _createColliders() {
@@ -323,7 +327,8 @@ class Level1 extends Phaser.Scene {
         this.physics.add.collider(this.gemGroup, this.platforms);
         this.physics.add.collider(this.gemGroup, this.ground);
         this.physics.add.collider(this.gemGroup, this.player, this.collectGem, null, this);
-
+     
+        
     }
 
     _createCursors() {
@@ -416,7 +421,15 @@ class Level1 extends Phaser.Scene {
         enemy.die();
     }
 
-
+    _win() {
+        this.physics.pause();
+        this.time.removeAllEvents();
+        this.gameOver = true;
+        this.gameSound.stop();
+        this.win.play();
+            this._createWinMenu();
+        
+    }
     _onGameOver() {
         this.player.death();
         // IMPORTANT: aqui se puede sacar el puntaje y el nombre del jugador para mandarlo al localstorage
@@ -541,6 +554,7 @@ class Level1 extends Phaser.Scene {
         const mainCamara = this.cameras.main;
         const dispCentX = window.innerWidth / 2 + mainCamara.scrollX;
         const dispCentY = window.innerHeight / 2 + mainCamara.scrollY;
+
         // Capa de sombra que cubre toda la pantalla
         const sombra = this.add.rectangle(
             mainCamara.scrollX + this.scale.width / 2,
