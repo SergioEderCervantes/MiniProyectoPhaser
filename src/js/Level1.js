@@ -25,6 +25,7 @@ class Level1 extends Phaser.Scene {
         this.timerText = null;
         this.isTimerActive = false;
         this.dateText = null;
+        this.playerType = playerType;
     }
 
 
@@ -49,7 +50,27 @@ class Level1 extends Phaser.Scene {
         this.load.image('rocks', '../../assets/rocks.png')
         this.load.image('heart', '../../assets/Corazonlleno.png');
         this.load.image('emptyHeart', '../../assets/CorazonVacio.png');
-        this.load.image('heartObj', '../../assets/objetcs/heartObj.png');this.load.image('cartel', '../../assets/tiles/cartel.png')
+        this.load.image('heartObj', '../../assets/objetcs/heartObj.png');
+        this.load.image('cartel', '../../assets/tiles/cartel.png')
+        if(this.playerType == 1){
+            this._loadPlayer1();
+        } else {
+            this._loadPlayer2();
+        }
+        this._loadEnemy();
+        
+        
+        this.load.audio('game', '../../assets/music/game.ogg');
+        this.load.audio('win', '../../assets/music/win.mp3');
+        this.load.audio('next', '../../assets/music/next.mp3');
+        this.load.audio('menu', '../../assets/music/menu.mp3');
+        this.load.audio('lose', '../../assets/music/lose.wav');
+        this.load.audio('coin', '../../assets/music/coin.mp3');
+        this.load.audio('special', '../../assets/music/special_item.mp3');
+
+    }
+
+    _loadPlayer1(){
         this.load.spritesheet('idle',
             '../../assets/player/_Idle.png',
             { frameWidth: 120, frameHeight: 80 }
@@ -70,6 +91,32 @@ class Level1 extends Phaser.Scene {
             '../../assets/player/_Run.png',
             { frameWidth: 120, frameHeight: 80 }
         );
+    }
+    _loadPlayer2(){
+        // TODO 
+        this.load.spritesheet('idle',
+            '../../assets/player2/_Idle.png',
+            { frameWidth: 120, frameHeight: 80 }
+        );
+        this.load.spritesheet('die',
+            '../../assets/player2/_Death.png',
+            { frameWidth: 120, frameHeight: 80 }
+        );
+        this.load.spritesheet('attack',
+            '../../assets/player2/_Attack.png',
+            { frameWidth: 120, frameHeight: 80 }
+        );
+        this.load.spritesheet('dash',
+            '../../assets/player2/_Dash.png',
+            { frameWidth: 120, frameHeight: 80 }
+        );
+        this.load.spritesheet('run',
+            '../../assets/player2/_Run.png',
+            { frameWidth: 120, frameHeight: 80 }
+        );
+    }
+
+    _loadEnemy(){
         this.load.spritesheet('enemy',
             '../../assets/enemy.png',
             { frameWidth: 32, frameHeight: 48 }
@@ -93,15 +140,6 @@ class Level1 extends Phaser.Scene {
         this.load.spritesheet('gem', '../../assets/objetcs/gemSprite.png',
             { frameWidth: 23, frameHeight: 27 }
         );
-
-        this.load.audio('game', '../../assets/music/game.ogg');
-        this.load.audio('win', '../../assets/music/win.mp3');
-        this.load.audio('next', '../../assets/music/next.mp3');
-        this.load.audio('menu', '../../assets/music/menu.mp3');
-        this.load.audio('lose', '../../assets/music/lose.wav');
-        this.load.audio('coin', '../../assets/music/coin.mp3');
-        this.load.audio('special', '../../assets/music/special_item.mp3');
-
     }
     // Metodo que se llama cuando se crea la escena y la renderiza
     create() {

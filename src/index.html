@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="css/styles.css">
     <script src="../node_modules/phaser/dist/phaser.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="js/objetos/objetos.js"></script>
     <script src="js/player/AbsCharacter.js" defer></script>
     <script src="js/player/Enemy.js" defer></script>
@@ -20,11 +20,12 @@
     <script src="js/Level2.js" defer></script>
     <script src="js/main.js" defer></script>
     <script src="js/player/local.js" defer></script>
+    <script src="js/dragNdrop.js" defer></script>
 </head>
 
 
 <body>
-    <div id="menu">
+    <div id="menu" >
         <h1>Bienvenido al Juego</h1>
         <button class="btn" id="btnJugador">Jugar</button>
         <button class="btn" id="btnRegistros">Registros</button>
@@ -33,16 +34,26 @@
         <button class="btn" id="btnCreditos">Creditos</button>
         <button class="btn" id="btnSalir">Salir</button>
     </div>
-
-    <!-- Formulario de registro y botón de jugar -->
-    <div id="registroForm" style="display: none;">
-        <h3>Ingrese un alias:</h3>
-        <input type="text" id="aliasInput" placeholder="Paliti_BB">
-        <br>
-        <button class="btn" id="registrarAlias">Registrar Alias</button>
-        <button class="btn" id="startGame" disabled>Jugar</button> <!-- Inicialmente deshabilitado -->
+<!-- Sección de seleccion de jugador -->
+<div id="seleccionarJugador" style="display: none;">
+    <h1>Selecciona a tu personaje</h1>
+    <div class="playerContainer">
+        <div class="sprite" id="player1">
+            <img id="1" src="../assets/player/_IdleMenu.png" draggable="true" alt="img1">
+        </div>
+        <div class="sprite" id="player2">
+            <img id="2" src="../assets/player2/_IdleMenu.png" draggable="true" alt="img2">
+        </div>
+        <div class="sprite" id="selected"></div>
+        <div id="aliasCont">
+            <h3>Ingrese un alias:</h3>
+            <input type="text" id="aliasInput" placeholder="Paliti_BB">
+        </div>
+        <button id="playBtn" disabled>Play</button>
         <button class="btn" id="regresarMenu">Regresar al Menú</button>
+
     </div>
+</div>
 
     <!-- Tabla de registros de jugadores -->
     <div id="tablaRegistros" style="display: none;">
@@ -61,24 +72,22 @@
     </div>
 
     <!-- Sección de Instrucciones -->
-<div id="instrucciones" style="display: none;">
-    <h3>Instrucciones</h3>
-    <p>Para jugar solo ocupas jugar con las teclas de atrás y adelante.</p>
-    <button class="btn" id="regresarMenuInstrucciones">Regresar al Menú</button>
-</div>
+    <div id="instrucciones" style="display: none;">
+        <h3>Instrucciones</h3>
+        <p>Para jugar solo ocupas jugar con las teclas de atrás y adelante.</p>
+        <button class="btn" id="regresarMenuInstrucciones">Regresar al Menú</button>
+    </div>
 
-<!-- Sección de Créditos -->
-<div id="creditos" style="display: none;">
-    <h3>Créditos</h3>
-    <p>Créditos para todos mis compañeros guapos.</p>
-    <button class="btn" id="regresarMenuCreditos">Regresar al Menú</button>
-</div>
-
+    <!-- Sección de Créditos -->
+    <div id="creditos" style="display: none;">
+        <h3>Créditos</h3>
+        <p>Créditos para todos mis compañeros guapos.</p>
+        <button class="btn" id="regresarMenuCreditos">Regresar al Menú</button>
+    </div>
+    
 
     <div id="gameContainer" style="display: none;"></div>
     <canvas id="creditsCanvas" width="800" height="500" style="display: none;"></canvas>
 </body>
 
 </html>
-
-

@@ -1,15 +1,14 @@
-var verifiedAlias;
 
 document.getElementById("btnJugador").addEventListener("click", function () {
     document.getElementById("menu").style.display = "none";
-    document.getElementById("registroForm").style.display = "block";
+    document.getElementById("seleccionarJugador").style.display = "block";
     document.getElementById("tablaRegistros").style.display = "none";
 });
 
 document.getElementById("btnRegistros").addEventListener("click", function () {
     document.getElementById("menu").style.display = "none";
     document.getElementById("tablaRegistros").style.display = "block";
-    document.getElementById("registroForm").style.display = "none";
+    document.getElementById("seleccionarJugador").style.display = "none";
 });
 
 document.getElementById("btnSalir").addEventListener("click", function () {
@@ -18,58 +17,16 @@ document.getElementById("btnSalir").addEventListener("click", function () {
 
 document.getElementById("regresarMenu").addEventListener("click", function () {
     document.getElementById("menu").style.display = "block";
-    document.getElementById("registroForm").style.display = "none";
+    document.getElementById("seleccionarJugador").style.display = "none";
     document.getElementById("tablaRegistros").style.display = "none";
-});  // <-- Paréntesis de cierre que faltaba
+});  
 
 document.getElementById("regresarMenuRegistros").addEventListener("click", function () {
     document.getElementById("menu").style.display = "block";
-    document.getElementById("registroForm").style.display = "none";
+    document.getElementById("seleccionarJugador").style.display = "none";
     document.getElementById("tablaRegistros").style.display = "none";
 });
 
-
-document.getElementById("registrarAlias").addEventListener("click", function() {
-    let alias = document.getElementById("aliasInput").value.trim();
-    let aliasRegex = /^[a-zA-Z0-9_]{4,8}$/;
-
-    if (!aliasRegex.test(alias)) {
-        Swal.fire({
-            icon: "error",
-            title: "Alias inválido",
-            text: "El alias debe tener entre 4 y 8 caracteres y solo puede contener letras, números y '_'.",
-        });
-        return;
-    }
-
-    if (localStorage.getItem(alias)) {
-        Swal.fire({
-            icon: "warning",
-            title: "Alias ya registrado",
-            text: "Este alias ya existe. Intenta con otro.",
-        });
-    } else {
-        let jugador = {
-            alias: alias,
-            puntuacion: 0,
-            fecha: new Date().toLocaleDateString()
-        };
-        localStorage.setItem(alias, JSON.stringify(jugador));  // Guardar el jugador en localStorage
-
-        // Guardar el alias como texto
-        localStorage.setItem('verifiedAlias', alias);  // Guardamos solo el alias como texto
-
-        Swal.fire({
-            icon: "success",
-            title: "Registro exitoso",
-            text: `El alias "${alias}" ha sido registrado correctamente.`,
-        });
-
-        document.getElementById("aliasInput").value = "";
-        document.getElementById("startGame").disabled = false;  // Habilitar el botón de jugar
-        verifiedAlias = alias;
-    }
-});
 
 // Mostrar registros
 document.getElementById("btnRegistros").addEventListener("click", function () {
@@ -123,12 +80,6 @@ document.getElementById("btninstr").addEventListener("click", function() {
     document.getElementById("instrucciones").style.display = "block";
 });
 
-// Botón de Créditos
-// document.getElementById("btncreditos").addEventListener("click", function() {
-//     document.getElementById("menu").style.display = "none";
-//     document.getElementById("creditos").style.display = "block";
-// });
-
 // Regresar desde Instrucciones
 document.getElementById("regresarMenuInstrucciones").addEventListener("click", function() {
     document.getElementById("instrucciones").style.display = "none";
@@ -150,7 +101,7 @@ function regresarAlMenu() {
     menu.style.alignItems = "center";  
     menu.style.justifyContent = "center";  
 
-    document.getElementById("registroForm").style.display = "none";  
+    document.getElementById("seleccionarJugador").style.display = "none";  
     document.getElementById("tablaRegistros").style.display = "none";  
     document.getElementById("instrucciones").style.display = "none";  
     document.getElementById("creditos").style.display = "none";  
@@ -164,7 +115,7 @@ document.getElementById("regresarMenuCreditos").addEventListener("click", regres
 document.getElementById("btnCreditos").addEventListener("click", function () {
     document.getElementById("menu").style.display = "none";
     document.getElementById("tablaRegistros").style.display = "none";
-    document.getElementById("registroForm").style.display = "none";
+    document.getElementById("seleccionarJugador").style.display = "none";
     
     const canvas = document.getElementById('creditsCanvas');
     canvas.style.display = "block";
