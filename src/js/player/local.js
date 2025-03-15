@@ -1,34 +1,34 @@
 var verifiedAlias;
 
-document.getElementById("btnJugador").addEventListener("click", function() {
-    document.getElementById("menu").style.display = "none";  
-    document.getElementById("registroForm").style.display = "block";  
-    document.getElementById("tablaRegistros").style.display = "none";  
+document.getElementById("btnJugador").addEventListener("click", function () {
+    document.getElementById("menu").style.display = "none";
+    document.getElementById("registroForm").style.display = "block";
+    document.getElementById("tablaRegistros").style.display = "none";
 });
 
-document.getElementById("btnRegistros").addEventListener("click", function() {
-    document.getElementById("menu").style.display = "none";  
-    document.getElementById("tablaRegistros").style.display = "block";  
-    document.getElementById("registroForm").style.display = "none";  
+document.getElementById("btnRegistros").addEventListener("click", function () {
+    document.getElementById("menu").style.display = "none";
+    document.getElementById("tablaRegistros").style.display = "block";
+    document.getElementById("registroForm").style.display = "none";
 });
 
-document.getElementById("btnSalir").addEventListener("click", function() {
+document.getElementById("btnSalir").addEventListener("click", function () {
     window.close();  // Esto cierra la ventana del navegador (esto solo funciona en algunas circunstancias)
 });
 
-document.getElementById("regresarMenu").addEventListener("click", function() {
-    document.getElementById("menu").style.display = "block";  
-    document.getElementById("registroForm").style.display = "none";  
-    document.getElementById("tablaRegistros").style.display = "none";  
+document.getElementById("regresarMenu").addEventListener("click", function () {
+    document.getElementById("menu").style.display = "block";
+    document.getElementById("registroForm").style.display = "none";
+    document.getElementById("tablaRegistros").style.display = "none";
 });  // <-- Paréntesis de cierre que faltaba
 
-document.getElementById("regresarMenuRegistros").addEventListener("click", function() {
-    document.getElementById("menu").style.display = "block";  
-    document.getElementById("registroForm").style.display = "none";  
-    document.getElementById("tablaRegistros").style.display = "none";  
+document.getElementById("regresarMenuRegistros").addEventListener("click", function () {
+    document.getElementById("menu").style.display = "block";
+    document.getElementById("registroForm").style.display = "none";
+    document.getElementById("tablaRegistros").style.display = "none";
 });
 
-document.getElementById("registrarAlias").addEventListener("click", function() {
+document.getElementById("registrarAlias").addEventListener("click", function () {
     let alias = document.getElementById("aliasInput").value.trim();
     let aliasRegex = /^[a-zA-Z0-9_]{4,8}$/;
 
@@ -61,7 +61,7 @@ document.getElementById("registrarAlias").addEventListener("click", function() {
             text: `El alias "${alias}" ha sido registrado correctamente.`,
         });
 
-        document.getElementById("aliasInput").value = ""; 
+        document.getElementById("aliasInput").value = "";
         document.getElementById("startGame").disabled = false;  // Habilitar el botón de jugar
         // Guardar el Alias verificado
         verifiedAlias = alias;
@@ -69,7 +69,7 @@ document.getElementById("registrarAlias").addEventListener("click", function() {
 });
 
 // Mostrar registros
-document.getElementById("btnRegistros").addEventListener("click", function() {
+document.getElementById("btnRegistros").addEventListener("click", function () {
     let tablaBody = document.getElementById("tablaBody");
     tablaBody.innerHTML = ""; // Limpiar la tabla
 
@@ -78,7 +78,7 @@ document.getElementById("btnRegistros").addEventListener("click", function() {
     for (let i = 0; i < localStorage.length; i++) {
         let alias = localStorage.key(i);
         let data = localStorage.getItem(alias);
-        
+
         try {
             let jugador = JSON.parse(data); // Convertir a objeto JSON
             if (jugador && jugador.puntuacion !== undefined) {
@@ -113,3 +113,46 @@ document.getElementById("btnRegistros").addEventListener("click", function() {
     });
 });
 
+document.getElementById("btnCreditos").addEventListener("click", function () {
+    document.getElementById("menu").style.display = "none";
+    document.getElementById("tablaRegistros").style.display = "none";
+    document.getElementById("registroForm").style.display = "none";
+    
+    const canvas = document.getElementById('creditsCanvas');
+    canvas.style.display = "block";
+
+    const ctx = canvas.getContext("2d");
+
+    const date = new Date().toLocaleDateString();
+    const texts = [
+        "Universidad Autónoma de Aguascalientes",
+        "Materia de Tecnologías Web",
+        "Maestra: Georgina Salazar Partida",
+        "Daan Jostin Carabez García",
+        "Sergio Eder Cervantes Rincón",
+        "Eduardo Said Guerrero Rico",
+        date
+    ];
+
+    let positions = texts.map((_, i) => canvas.height + i * 100);
+
+    function drawCredits() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "black";
+        ctx.font = "30px Arial";
+        ctx.textAlign = "center";
+
+        positions.forEach((y, i) => {
+            ctx.fillText(texts[i], canvas.width / 2, y);
+            positions[i] -= 0.5; 
+        });
+
+        if (positions[positions.length - 1] < -50) {
+            positions = texts.map((_, i) => canvas.height + i * 100);
+        }
+
+        requestAnimationFrame(drawCredits);
+    }
+
+    drawCredits(); // Iniciar animación
+});

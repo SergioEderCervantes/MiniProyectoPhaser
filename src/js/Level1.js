@@ -24,6 +24,7 @@ class Level1 extends Phaser.Scene {
         this.timer = 0;
         this.timerText = null;
         this.isTimerActive = false;
+        this.dateText = null;
     }
 
 
@@ -140,6 +141,11 @@ class Level1 extends Phaser.Scene {
         this.enemys.children.iterate(enemy => enemy.handleMov());
         this._updateDashCooldownUI();
         this._checkSwitchLvl();
+        // Prueba para crear la pantalla de ganador
+        if(this.score >= 1000){
+
+        }
+
     }
 
     // Metodos auxiliares de la escena
@@ -484,7 +490,8 @@ class Level1 extends Phaser.Scene {
 
         // Contenedor
         this.menuContainer = this.add.container(0, 0, [sombra, btn1, btn2, text1, text2, text3])
-
+        this._addHoverEffect(btn1);
+        this._addHoverEffect(btn2);
 
         sombra.setDepth(0);
         this.menuContainer.setDepth(1);
@@ -521,18 +528,44 @@ class Level1 extends Phaser.Scene {
         // UI elements
         const title = this.add.text(dispCentX - 70, dispCentY - 200, "Game Over", textStyle);
         const btn = this.add.image(dispCentX + 20, dispCentY, 'button').setInteractive();
-        const text = this.add.text(dispCentX - 70, btn.y - 16, "Reiniciar", textStyle);
+        const text = this.add.text(dispCentX - 150, btn.y - 16, "Volver al Menu Principal", textStyle);
         // Contenedor
         this.menuContainer = this.add.container(0, 0, [sombra, title, btn, text])
-
+        this._addHoverEffect(btn);
 
         sombra.setDepth(0);
         this.menuContainer.setDepth(1);
 
-        //  TODO IMPORTANTE: probablemente la maestra se empute si ve que asi reiniciamos el juego
         btn.on('pointerdown', () => location.reload());
     }
 
+    _createWinMenu(){
+        // Como esta ya es la pantalla final, podemos agregar algo mas padre, tmb en el menu de derrota
+        const mainCamara = this.cameras.main;
+        const dispCentX = window.innerWidth / 2 + mainCamara.scrollX;
+        const dispCentY = window.innerHeight / 2 + mainCamara.scrollY;
+        // Capa de sombra que cubre toda la pantalla
+        const sombra = this.add.rectangle(
+            mainCamara.scrollX + this.scale.width / 2,
+            mainCamara.scrollY + this.scale.height / 2,
+            this.scale.width, this.scale.height,
+            0x000000, 0.8
+        ).setOrigin(0.5);
+        const textStyle = { fontSize: '32px', fill: "#fff" };
+
+        // UI elements
+        const title = this.add.text(dispCentX - 150, dispCentY - 200, "Felicidades!! Has ganado", textStyle);
+        const btn = this.add.image(dispCentX + 20, dispCentY, 'button').setInteractive();
+        const text = this.add.text(dispCentX - 150, btn.y - 16, "Volver al Menu Principal", textStyle);
+        // Contenedor
+        this.menuContainer = this.add.container(0, 0, [sombra, title, btn, text])
+        this._addHoverEffect(btn);
+
+        sombra.setDepth(0);
+        this.menuContainer.setDepth(1);
+
+        btn.on('pointerdown', () => location.reload());
+    }
 
     // Estoy pensandolo para que esta funcion mate a todos los menus, si el create no se puede al menos el destroy
     _closeMenu() {
@@ -542,14 +575,32 @@ class Level1 extends Phaser.Scene {
         }
     }
 
-
+    _addHoverEffect(button) {
+        button.on('pointerover', () => {
+            button.setTint(0xaaaaaa); 
+        });
+    
+        button.on('pointerout', () => {
+            button.clearTint(); 
+        });
+    
+        button.on('pointerdown', () => {
+            button.setScale(0.95); 
+        });
+    
+        button.on('pointerup', () => {
+            button.setScale(1); 
+        });
+    }
     _createUIElements() {
-        //Score del jugador
-        this.scoreText = this.add.text(16, 16, 'Score: 0', {
+        const fontStyle = {
             fontFamily: '"Pixelify Sans"',
             fontSize: '32px',
             color: this.textColor
-        });
+        };
+
+        //Score del jugador
+        this.scoreText = this.add.text(16, 16, 'Score: 0', fontStyle );
 
 
         // colldown del dash
@@ -558,11 +609,7 @@ class Level1 extends Phaser.Scene {
         this.cooldownBar.fillRect(16, 50, 100, 15);
         this.cooldownBar.setDepth(10);
         // Nombre del jugador
-        this.playerAliasText = this.add.text(window.innerWidth - 150, 16, this.playerAlias, {
-            fontFamily: '"Pixelify Sans"',
-            fontSize: '32px',
-            color: this.textColor,
-        });
+        this.playerAliasText = this.add.text(window.innerWidth - 150, 16, this.playerAlias, fontStyle);
         this.playerAliasText.setScrollFactor(0);
         // Corazones de Vida (Abajo del score)
         this.heartDisplay = this.physics.add.staticGroup({
@@ -592,6 +639,9 @@ class Level1 extends Phaser.Scene {
             loop: true
         });
 
+        // Fecha
+        const date = new Date().toLocaleDateString();
+        this.dateText = this.add.text(180,16,  date,fontStyle).setScrollFactor(0);
     }
     _updateDashCooldownUI() {
         let progress = this.player.getDashCooldwnProg();

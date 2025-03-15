@@ -1,10 +1,27 @@
+:root {
+    --primary-bg: #171a29;
+    --primary-text: white;
+    --primary-font: 'Pixelify Sans', sans-serif;
+    --button-bg: #c2370d;
+    --button-hover-bg: #e64a19;
+    --button-text: white;
+    --button-padding: 15px 30px;
+    --button-font-size: 20px;
+    --form-input-width: 250px;
+    --form-input-padding: 10px;
+    --form-input-radius: 5px;
+    --form-font-size: 18px;
+}
+
 body {
-    background-color: #171a29;
-    font-family: 'Pixelify Sans', sans-serif;
-    color: white;
+    background-color: var(--primary-bg);
+    font-family: var(--primary-font);
+    color: var(--primary-text);
     text-align: center;
-    overflow:hidden; /* Esto elimina el overflow */
+    overflow: hidden;
     margin: 0;
+    display: grid;
+    align-items: center;
 }
 
 #menu {
@@ -21,46 +38,51 @@ h1 {
 }
 
 button {
-    padding: 15px 30px;
-    font-size: 20px;
-    background-color: #c2370d;
+    padding: var(--button-padding);
+    font-size: var(--button-font-size);
+    background-color: var(--button-bg);
     border: none;
-    color: white;
+    color: var(--button-text);
     cursor: pointer;
     transition: 0.3s;
     margin: 20px;
 }
 
 button:hover {
-    background-color: #e64a19;
+    background-color: var(--button-hover-bg);
 }
 
 table {
-    width: 40%; 
-    margin: 0 auto; 
-    border-collapse: collapse; 
+    width: 40%;
+    margin: 0 auto;
+    border-collapse: collapse;
+}
+
+#registroForm {
+    text-align: center;
 }
 
 #registroForm h3 {
     font-size: 24px;
-    margin-bottom: 10px; 
+    margin-bottom: 10px;
 }
 
 #registroForm input {
-    font-size: 18px; 
-    padding: 10px; 
-    width: 250px; 
-    margin-bottom: 20px; 
-    border-radius: 5px; 
+    font-size: var(--form-font-size);
+    padding: var(--form-input-padding);
+    width: var(--form-input-width);
+    margin-bottom: 20px;
+    border-radius: var(--form-input-radius);
 }
 
 #registroForm button {
-    font-size: 18px; 
-    padding: 10px 20px; 
-    margin-top: 10px; 
-    border-radius: 5px; 
+    font-size: var(--form-font-size);
+    padding: 10px 20px;
+    margin-top: 10px;
+    border-radius: var(--form-input-radius);
 }
-
-#registroForm {
-    text-align: center; 
+canvas {
+    display: block;
+    background-color: #fff5e1; 
+    margin: 50px auto;
 }

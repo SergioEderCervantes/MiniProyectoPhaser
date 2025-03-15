@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créditos Animados</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #f5e1c8; /* Crema más fuerte */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        canvas {
+            display: block;
+            background-color: #fff5e1; /* Crema más suave */
+            width: 40vw;
+            height: 90vh;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="creditsCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById("creditsCanvas");
+        const ctx = canvas.getContext("2d");
+        
+        canvas.width = window.innerWidth * 0.4;
+        canvas.height = window.innerHeight * 0.9;
+        
+        const texts = [
+            "Director: John Doe",
+            "Guion: Jane Smith",
+            "Música: Alan Walker",
+            "Productor: Emma Johnson",
+            "Editor: Chris Evans",
+            "Cinematografía: Scarlett Lee",
+            "Agradecimientos: Todos ustedes"
+        ];
+        
+        let positions = texts.map((_, i) => canvas.height + i * 100);
+        
+        function drawCredits() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "black";
+            ctx.font = "30px Arial";
+            ctx.textAlign = "center";
+            
+            positions.forEach((y, i) => {
+                ctx.fillText(texts[i], canvas.width / 2, y);
+                positions[i] -= 0.5; // Velocidad de desplazamiento más lenta
+            });
+            
+            if (positions[positions.length - 1] < 0) {
+                positions = texts.map((_, i) => canvas.height + i * 50);
+            }
+            
+            requestAnimationFrame(drawCredits);
+        }
+        
+        drawCredits();
+    </script>
+</body>
+</html>
