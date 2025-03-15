@@ -280,7 +280,7 @@ class Level1 extends Phaser.Scene {
 
     _createCamera() {
         // Se setea la camara principal para que siga al jugador y marca los limites del mapa en la camara
-        this.cameras.main.setBounds(0, 0, 2800, 600);
+        this.cameras.main.setBounds(0, 0, 2610, 600);
         this.cameras.main.startFollow(this.player, true, 1, 1);
     }
 
