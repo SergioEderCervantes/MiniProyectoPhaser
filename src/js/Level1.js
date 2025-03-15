@@ -122,7 +122,7 @@ class Level1 extends Phaser.Scene {
         // Tema UI
         this._createUIElements();
         this.next = this.sound.add('next', { volume: 0.5 });
-        this.win = this.sound.add('win');
+        this.win = this.sound.add('win', { volume: 0.5 });
         this.menu = this.sound.add('menu', { loop: true, volume: 0.5 });
         this.loseSound = this.sound.add('lose', { volume: 0.5 });
         this.itemSound = this.sound.add('coin', { volume: 0.2 });
