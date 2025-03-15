@@ -1,5 +1,5 @@
 class Level1 extends Phaser.Scene {
-    constructor(key) {
+    constructor(key = "Level1") {
         super({ key: key });
         this.platforms = null;
         this.player = null;
@@ -15,9 +15,12 @@ class Level1 extends Phaser.Scene {
         this.menuContainer = null;
         this.dashCooldownBar = null;
         // TODO: cuando se conecte con el menu playerAlias no sera necesario, o si si va a guardar el valor de lo que ponga el usuario en el menu
-        this.playerAlias = "Skorge";
+        this.playerAlias = verifiedAlias;
         this.playerAliasText = null;
         this.heartDisplay = null;
+        this.color = 0x6a4952;
+        this.textColor = '#6a4952';
+        this.healthCooldown = false;
     }
 
 
@@ -32,16 +35,16 @@ class Level1 extends Phaser.Scene {
         this.load.image('layer5','../../assets/parallax_bg_lvl1/Hills Layer 05.png');
         this.load.image('layer6','../../assets/parallax_bg_lvl1/Hills Layer 06.png');
 
-        this.load.image('forest', '../../assets/forest.jpg');
         this.load.image('ground', '../../assets/platform.png');
         this.load.image('star', '../../assets/star.png');
         this.load.image('platform', '../../assets/plank.png');
         this.load.image('platformw', '../../assets/plankwall.png');
-        this.load.image('bomb', '../../assets/bomb.png');
         this.load.image('button', '../../assets/btnPerdonJost.png')
         this.load.image('back', '../../assets/cave.png')
         this.load.image('front', '../../assets/cavef.png')
         this.load.image('rocks', '../../assets/rocks.png')
+        this.load.image('heart', '../../assets/Corazonlleno.png');
+        this.load.image('emptyHeart', '../../assets/CorazonVacio.png');
         this.load.image('cartel', '../../assets/tiles/cartel.png')
         this.load.spritesheet('idle',
             '../../assets/player/_Idle.png',
@@ -62,15 +65,27 @@ class Level1 extends Phaser.Scene {
         this.load.spritesheet('run',
             '../../assets/player/_Run.png',
             { frameWidth: 120, frameHeight: 80 }
-        );
-        
-        
+        );        
         this.load.spritesheet('enemy',
             '../../assets/enemy.png',
             { frameWidth: 32, frameHeight: 48 }
         );
-        this.load.image('heart', '../../assets/Corazonlleno.png');
-        this.load.image('emptyHeart', '../../assets/CorazonVacio.png');
+        this.load.spritesheet('eIdle',
+            '../../assets/enemy/Skeleton_Idle.png',
+            {frameWidth: 36, frameHeight: 48}
+        );
+        this.load.spritesheet('eWalk',
+            '../../assets/enemy/Skeleton_Walk.png',
+            {frameWidth: 32, frameHeight: 48}
+        );
+        this.load.spritesheet('eAttack',
+            '../../assets/enemy/Skeleton_Attack.png',
+            {frameWidth: 65, frameHeight: 56}
+        );
+        this.load.spritesheet('eDead',
+            '../../assets/enemy/Skeleton_Dead.png',
+            {frameWidth: 50, frameHeight: 48}
+        ); 
 
         this.load.audio('game', '../../assets/music/game.ogg');
         this.load.audio('win', '../../assets/music/win.mp3');
@@ -117,17 +132,7 @@ class Level1 extends Phaser.Scene {
         this.player.handleMov(this.cursors);
         this.enemys.children.iterate(enemy => enemy.handleMov());
         this._updateDashCooldownUI();
-        if ( this.player.x >= 1950) {
-            this.physics.pause();
-            this.time.removeAllEvents();
-            this.cameras.main.fade(2000, 0, 0, 0);
-            this.cameras.main.on('camerafadeoutcomplete', () => {
-                this.gameSound.stop();
-                this.next.play();
-                this.scene.start('Level2');
-            });
-
-        }
+        this._checkSwitchLvl();
     }
 
     // Metodos auxiliares de la escena
@@ -213,14 +218,16 @@ class Level1 extends Phaser.Scene {
             { x: 1197, y: 55 },
             { x: 1520, y: 535 },
         ]
-    //   this.time.addEvent({
-    //       delay: 1000,
-    //       callback: () => {
-    //           let spw = spawnPoints[Math.floor(Math.random() * 4)];
-    //           this.enemys.add(new Enemy(this, spw.x, spw.y, this.player))
-    //       },
-    //       loop: true,
-    //   });
+        this.time.addEvent({
+            delay: 3000,
+            callback: () => {
+                let spw = spawnPoints[Math.floor(Math.random() * 4)];
+                let enemy = new Enemy(this, spw.x, spw.y, this.player);
+                enemy.setSize(36,48);
+                this.enemys.add(enemy)
+            },
+            loop: true,
+        });
     }
 
     _createStars() {
@@ -302,7 +309,7 @@ class Level1 extends Phaser.Scene {
 
     _activateInvincibility(player) {
         player.isInvincible = true;
-
+    
         this.tweens.add({
             targets: player,
             alpha: 0,
@@ -311,50 +318,51 @@ class Level1 extends Phaser.Scene {
             repeat: 14,
             yoyo: true
         });
-        this.physics.world.removeCollider(this.playerEnemyCollider);
-
-        this.time.delayedCall(3000, () => {
-            player.isInvincible = false;
-            this.playerEnemyCollider = this.physics.add.collider(this.player, this.enemys, this._hitPlayer, null, this);
-
-        });
+    
+        this.time.delayedCall(3000, () => player.isInvincible = false);
     }
+    
 
     _hitPlayer(player, enemy) {
-
-        this._updateHearts();
-        if (this.hits === 2) {
-            this._deadPlayer(player, enemy);
-        } else {
-            this.hits++;
-            enemy.destroy();
-            this._activateInvincibility(player); // Activar la inmunidad
-        }
+        if (this.healthCooldown || player.isInvincible || enemy.isDying) return;  
+        enemy.attack();
+        this._takeDamage(player, enemy);
+    }
+    
+    
+    _takeDamage(player) {
+        this.healthCooldown = true;
+    
+        this.time.delayedCall(500, () => {
+            this._updateHearts();
+    
+            if (this.hits >= 2) {  // Usar operador de incremento
+                this._deadPlayer(player);
+            } else {
+                this.hits ++;
+                this._activateInvincibility(player);
+            }
+    
+            this.healthCooldown = false;
+        });
     }
     _deadPlayer(player, enemy) {
         
         player.setTint(0xff0000);
         player._stop();
-        enemy._stop();
-        
-            this._onGameOver();
-        
+        this._onGameOver();
     }
 
     // WARNING: PORQUE CHINGADOS AQUI ME LO TOMA EN ORDEN INVERSO?????????
     // CREO QUE MAGICAMENTE SE ARREGLO NMMS
     _hitEnemy(attack, enemy) {
-        enemy.disableBody(true, true);
-        // Crear una estrella nueva
-        const star = this.physics.add.sprite(enemy.x, enemy.y, 'star');
-        this.stars.add(star);
-        star.setBounce(1);
-        enemy.destroy();
+        enemy.die();
     }
 
 
     _onGameOver() {
         this.player.death();
+        // IMPORTANT: aqui se puede sacar el puntaje y el nombre del jugador para mandarlo al localstorage
         
         this.physics.pause();
         this.time.removeAllEvents();
@@ -385,7 +393,20 @@ class Level1 extends Phaser.Scene {
         this.isPaused = !this.isPaused;
     }
 
+    _checkSwitchLvl(){
+       
+        if ( this.player.x >= 1950) {
+            this.physics.pause();
+            this.time.removeAllEvents();
+            this.cameras.main.fade(2000, 0, 0, 0);
+            this.cameras.main.on('camerafadeoutcomplete', () => {
+                this.gameSound.stop();
+                this.next.play();
+                this.scene.start('Level2',{hits: this.hits, score: this.score});
+            });
 
+        }
+    }
 
     // Creacion de Menus y UI
     _createMenuPause() {
@@ -472,23 +493,23 @@ class Level1 extends Phaser.Scene {
 
     _createUIElements() {
         //Score del jugador
-        this.scoreText = this.add.text(16, 16, 'score: 0', {
+        this.scoreText = this.add.text(16, 16, 'Score: 0', {
             fontFamily: '"Pixelify Sans"',
             fontSize: '32px',
-            color: '#6a4952'
+            color: this.textColor
         });
         
         
         // colldown del dash
         this.cooldownBar = this.add.graphics();
-        this.cooldownBar.fillStyle(0x6a4952, 1);
+        this.cooldownBar.fillStyle(this.color, 1);
         this.cooldownBar.fillRect(16, 50, 100, 15);
         this.cooldownBar.setDepth(10);
         // Nombre del jugador
         this.playerAliasText = this.add.text(window.innerWidth - 150, 16, this.playerAlias, {
             fontFamily: '"Pixelify Sans"',
             fontSize: '32px',
-            color: '#6a4952'
+            color: this.textColor,
         });
         this.playerAliasText.setScrollFactor(0);
         // Corazones de Vida (Abajo del score)
@@ -508,30 +529,29 @@ class Level1 extends Phaser.Scene {
     _updateDashCooldownUI() {
         let progress = this.player.getDashCooldwnProg();
         this.cooldownBar.clear();
-        this.cooldownBar.fillStyle(0x6a4952, 1);
+        this.cooldownBar.fillStyle(this.color, 1);
         this.cooldownBar.fillRect(16, 50, 100 * progress, 15);
     }
 
     _updateHearts() {
         let hearts = this.heartDisplay.getChildren();
-        // Encuentra el último corazón lleno, cambia a un corazón vacío y detiene el loop después de cambiar uno
-        for (let i = hearts.length - 1; i >= 0; i--) {
-            if (hearts[i].texture.key === 'heart') { 
-                hearts[i].setTexture('emptyHeart'); 
-                this.tweens.add({
-                    targets: hearts[i],
-                    alpha: 0, 
-                    yoyo: true, 
-                    repeat: 6, 
-                    duration: 150
-                });
-                break; 
-            }
+        
+        // Buscar el último corazón lleno
+        let lastHeart = hearts.reverse().find(h => h.texture.key === 'heart');
+        hearts.reverse();
+        if (lastHeart) {
+            lastHeart.setTexture('emptyHeart');
+            this.tweens.add({
+                targets: lastHeart,
+                alpha: 0,
+                yoyo: true,
+                repeat: 6,
+                duration: 150
+            });
         }
-
     }
+    
 }
-
 
 function startGame() {
     var config = {
@@ -545,7 +565,7 @@ function startGame() {
                 debug: true
             }
         },
-        scene: [new Level1('Level1'), new Level2('Level2')]
+        scene: [Level1, Level2]
     };
 
     return new Phaser.Game(config);

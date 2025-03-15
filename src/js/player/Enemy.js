@@ -1,43 +1,62 @@
 class Enemy extends AbsCharacter {
     constructor(scene, x, y, playerTarget) {
-        super(scene, x, y, 'enemy');
-        this.nombreTextura = 'enemy'
+        super(scene, x, y, 'eIdle');
+        this.nombreTextura = 'eIdle'
         this.leftAnim = 'enemy_left';
         this.rightAnim = 'enemy_right';
         this.turnAnim = 'enemy_turn';
-        this.attackAnim = '';
+        this.attackAnim = 'enemy_attack';
         this.dashAnim = '';
-        this._createAnimations();
-        
+        Enemy._createAnimations(scene);
         this.playerTarget = playerTarget;
         this.velocityX = 80;
         this.velocityY = -330;
+        this.isAttacking = false;
+        this.isDying = false;
+        this.ONLYONE = false;
     }
 
-    _createAnimations(){
-        this.scene.anims.create({
-            key: this.leftAnim,
-            frames: this.scene.anims.generateFrameNumbers(this.nombreTextura, { start: 0, end: 3 }),
+    static _createAnimations(scene){
+        if (Enemy.animationsCreated) return;
+        
+        scene.anims.create({
+            key: 'enemy_left',
+            frames: scene.anims.generateFrameNumbers('eWalk', { start: 0, end: 3 }),
             frameRate: 10,
             repeat: -1,
         });
 
-        this.scene.anims.create({
-            key: this.turnAnim,
-            frames: this.scene.anims.generateFrameNumbers(this.nombreTextura, { start: 4, end: 4 }),
+        scene.anims.create({
+            key: 'enemy_turn',
+            frames: scene.anims.generateFrameNumbers('eIdle', { start: 0, end: 10 }),
             frameRate: 10,
             repeat: -1,
         });
 
-        this.scene.anims.create({
-            key: this.rightAnim,
-            frames: this.scene.anims.generateFrameNumbers(this.nombreTextura, { start: 5, end: 8 }),
+        scene.anims.create({
+            key: 'enemy_right',
+            frames: scene.anims.generateFrameNumbers('eWalk', { start: 5, end: 8 }),
             frameRate: 10,
             repeat: -1
         });
+        scene.anims.create({
+            key: 'enemy_attack',
+            frames: scene.anims.generateFrameNumbers('eAttack', { start: 0, end: 17 }),
+            frameRate: 20,
+            repeat: 0,
+        });
+        scene.anims.create({
+            key: 'enemy_dead',
+            frames: scene.anims.generateFrameNumbers('eDead', { start: 0, end: 14 }),
+            frameRate: 10,
+            repeat: 0
+        });
+
+        Enemy.animationsCreated = true;
     }
 
     handleMov(){
+        if (this.isAttacking || this.isDying) return;
         const playerX = this.playerTarget.x;
         const gap = 16;
 
@@ -49,9 +68,42 @@ class Enemy extends AbsCharacter {
             this._movRight();
         }
         // Jump mechanics 
-        const playerY = this.playerTarget.y;
+        // El +18 es un  ajuste por lo disparejo que estan los sprites cuando estan en el mismo lvl, verificar cuando se incluyan los demas sprites
+        const playerY = this.playerTarget.y + 18;
         if (playerY < this.y && this.body.touching.down && Math.random() < 0.01){
             this._jump();
         }
     }
+    attack() {
+        if (this.isAttacking ) return; // Evita spameo de ataques
+    
+        this.isAttacking = true;
+        const originalY = this.y;
+        
+        this.y -= 10;
+        this.anims.play(this.attackAnim, true);
+    
+        this.once('animationcomplete', () => {
+            console.log("kesestoooo")
+            this.y = originalY;
+            this.isAttacking = false;
+        });
+    }
+
+    die(){
+        if(this.isDying) return;
+        this.isDying = true;
+        this.setVelocityX(0);
+        this.anims.play('enemy_dead', true);
+        this.once('animationcomplete', (anim) => {
+            this.disableBody(false, false);
+            // Crear una estrella nueva
+            const star = this.scene.physics.add.sprite(this.x, this.y, 'star');
+            this.scene.stars.add(star);
+            star.setBounce(1);
+            this.destroy();
+            
+        })
+    }
+    
 }

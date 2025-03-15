@@ -1,3 +1,5 @@
+var verifiedAlias;
+
 document.getElementById("btnJugador").addEventListener("click", function() {
     document.getElementById("menu").style.display = "none";  
     document.getElementById("registroForm").style.display = "block";  
@@ -61,6 +63,8 @@ document.getElementById("registrarAlias").addEventListener("click", function() {
 
         document.getElementById("aliasInput").value = ""; 
         document.getElementById("startGame").disabled = false;  // Habilitar el botón de jugar
+        // Guardar el Alias verificado
+        verifiedAlias = alias;
     }
 });
 

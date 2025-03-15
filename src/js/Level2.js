@@ -1,10 +1,12 @@
 class Level2 extends Level1 {
-    constructor(key) {
+    constructor(key = "Level2") {
         super(key);
+        this.color = 0xffffff;
+        this.textColor = '#ffffff';
+        this.playerAlias = verifiedAlias;
     }
 
     preload() {
-        this.load.image('forest3', '../../assets/forest3.jpg');
         this.load.image('layer2.1', '../../assets/parallax_bg_lvl2/background_layer_1.png');
         this.load.image('layer2.2', '../../assets/parallax_bg_lvl2/background_layer_2.png');
         this.load.image('layer2.3', '../../assets/parallax_bg_lvl2/background_layer_3.png');
@@ -17,6 +19,19 @@ class Level2 extends Level1 {
         this.load.image('yunke', '../../assets/tiles/yunke.png');
         
 
+    }
+
+    create(data){
+        super.create();
+        if(data){
+            this.hits = data.hits;
+            this.score = data.score;
+            console.log(`Recibido: Vida = ${this.hits}, Puntuación = ${this.score}`);
+            this.scoreText.setText('Score: ' + this.score);
+            for (let i = 0; i < this.hits; i++) {
+                this._updateHearts();
+            }
+        }
     }
 
     _cretatePlatforms() {
@@ -78,7 +93,26 @@ class Level2 extends Level1 {
         
        
     }
-
+    _createEnemys() {
+        // Se requiere que sean un grupo de enemys y aparte setear su spawn y puntos de spawn
+        this.enemys = this.physics.add.group();
+        // Creacion periodica de enemigos cada 3 segundos (cambiar si es necesario):
+        const spawnPoints = [
+            { x: 70, y: 210 },
+            { x: 1197, y: 140 },
+            { x: 1520, y: 535 },
+        ]
+        this.time.addEvent({
+            delay: 1500,
+            callback: () => {
+                let spw = spawnPoints[Math.floor(Math.random() * 3)];
+                let enemy = new Enemy(this, spw.x, spw.y, this.player);
+                enemy.setSize(36,48);
+                this.enemys.add(enemy)
+            },
+            loop: true,
+        });
+    }
     _createCamera() {
         // Se setea la camara principal para que siga al jugador y marca los limites del mapa en la camara
         this.cameras.main.setBounds(0, 0, 2610, 600);
