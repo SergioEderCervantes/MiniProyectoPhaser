@@ -20,8 +20,8 @@ body {
     text-align: center;
     overflow: hidden;
     margin: 0;
-    display: grid;
-    align-items: center;
+    /* display: grid; */
+    /* align-items: center; */
 }
 
 #menu {
@@ -30,6 +30,13 @@ body {
     align-items: center;
     justify-content: center;
     height: 100vh;
+    gap: 20px;
+
+        /* Imagen de fondo */
+        background-image: url('../assets/fondosnayomis/li.jpg'); /* Cambia 'img/fondo.jpg' por la ruta real de tu imagen */
+        background-size: cover; /* Ajusta la imagen para cubrir todo el fondo */
+        background-position: center; /* Centra la imagen */
+        background-repeat: no-repeat; /* Evita que la imagen se repita */
 }
 
 h1 {
@@ -38,14 +45,18 @@ h1 {
 }
 
 button {
-    padding: var(--button-padding);
-    font-size: var(--button-font-size);
-    background-color: var(--button-bg);
+    width: 200px; /* Ajusta según el tamaño deseado */
+    height: 60px; /* Ajusta según el tamaño deseado */
+    padding: 10px; /* Puede ser menor si defines height */
+    font-size: 20px;
+    background-color: #c2370d;
     border: none;
     color: var(--button-text);
     cursor: pointer;
     transition: 0.3s;
     margin: 20px;
+    border-radius: 30px; /* Hace que las esquinas sean redondeadas */
+    text-align: center;
 }
 
 button:hover {
@@ -81,8 +92,17 @@ table {
     margin-top: 10px;
     border-radius: var(--form-input-radius);
 }
-canvas {
-    display: block;
-    background-color: #fff5e1; 
-    margin: 50px auto;
+
+#registroForm {
+    text-align: center; 
 }
+
+
+#instrucciones, #creditos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+

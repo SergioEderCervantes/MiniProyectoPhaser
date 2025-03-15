@@ -28,7 +28,8 @@ document.getElementById("regresarMenuRegistros").addEventListener("click", funct
     document.getElementById("tablaRegistros").style.display = "none";
 });
 
-document.getElementById("registrarAlias").addEventListener("click", function () {
+
+document.getElementById("registrarAlias").addEventListener("click", function() {
     let alias = document.getElementById("aliasInput").value.trim();
     let aliasRegex = /^[a-zA-Z0-9_]{4,8}$/;
 
@@ -53,7 +54,10 @@ document.getElementById("registrarAlias").addEventListener("click", function () 
             puntuacion: 0,
             fecha: new Date().toLocaleDateString()
         };
-        localStorage.setItem(alias, JSON.stringify(jugador));
+        localStorage.setItem(alias, JSON.stringify(jugador));  // Guardar el jugador en localStorage
+
+        // Guardar el alias como texto
+        localStorage.setItem('verifiedAlias', alias);  // Guardamos solo el alias como texto
 
         Swal.fire({
             icon: "success",
@@ -63,7 +67,6 @@ document.getElementById("registrarAlias").addEventListener("click", function () 
 
         document.getElementById("aliasInput").value = "";
         document.getElementById("startGame").disabled = false;  // Habilitar el botón de jugar
-        // Guardar el Alias verificado
         verifiedAlias = alias;
     }
 });
@@ -82,7 +85,7 @@ document.getElementById("btnRegistros").addEventListener("click", function () {
         try {
             let jugador = JSON.parse(data); // Convertir a objeto JSON
             if (jugador && jugador.puntuacion !== undefined) {
-                jugadores.push(jugador);
+                jugadores.push(jugador);  // Asegúrate de agregar a los jugadores con puntaje
             }
         } catch (error) {
             console.error(`Error al leer alias: ${alias}`, error);
@@ -106,13 +109,58 @@ document.getElementById("btnRegistros").addEventListener("click", function () {
     jugadores.forEach(jugador => {
         let fila = `<tr>
             <td>${jugador.alias}</td>
-            <td>${jugador.puntuacion}</td>
+            <td>${jugador.puntuacion}</td>  <!-- Mostrar el puntaje aquí -->
             <td>${jugador.fecha}</td>
         </tr>`;
         tablaBody.innerHTML += fila;
     });
 });
 
+
+// Botón de Instrucciones
+document.getElementById("btninstr").addEventListener("click", function() {
+    document.getElementById("menu").style.display = "none";
+    document.getElementById("instrucciones").style.display = "block";
+});
+
+// Botón de Créditos
+// document.getElementById("btncreditos").addEventListener("click", function() {
+//     document.getElementById("menu").style.display = "none";
+//     document.getElementById("creditos").style.display = "block";
+// });
+
+// Regresar desde Instrucciones
+document.getElementById("regresarMenuInstrucciones").addEventListener("click", function() {
+    document.getElementById("instrucciones").style.display = "none";
+    document.getElementById("menu").style.display = "block";
+});
+
+// Regresar desde Créditos
+document.getElementById("regresarMenuCreditos").addEventListener("click", function() {
+    document.getElementById("creditos").style.display = "none";
+    document.getElementById("menu").style.display = "block";
+});
+
+
+
+function regresarAlMenu() {
+    let menu = document.getElementById("menu");
+    menu.style.display = "flex";  
+    menu.style.flexDirection = "column";  // Mantener alineación vertical
+    menu.style.alignItems = "center";  
+    menu.style.justifyContent = "center";  
+
+    document.getElementById("registroForm").style.display = "none";  
+    document.getElementById("tablaRegistros").style.display = "none";  
+    document.getElementById("instrucciones").style.display = "none";  
+    document.getElementById("creditos").style.display = "none";  
+}
+
+// Usar esta función en todos los botones que regresan al menú
+document.getElementById("regresarMenu").addEventListener("click", regresarAlMenu);
+document.getElementById("regresarMenuRegistros").addEventListener("click", regresarAlMenu);
+document.getElementById("regresarMenuInstrucciones").addEventListener("click", regresarAlMenu);
+document.getElementById("regresarMenuCreditos").addEventListener("click", regresarAlMenu);
 document.getElementById("btnCreditos").addEventListener("click", function () {
     document.getElementById("menu").style.display = "none";
     document.getElementById("tablaRegistros").style.display = "none";

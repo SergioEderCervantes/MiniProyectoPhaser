@@ -15,6 +15,7 @@
     <script src="js/player/AbsCharacter.js" defer></script>
     <script src="js/player/Enemy.js" defer></script>
     <script src="js/player/Player.js" defer></script>
+    <script src="js/player/Structure.js" defer></script>
     <script src="js/Level1.js" defer></script>
     <script src="js/Level2.js" defer></script>
     <script src="js/main.js" defer></script>
@@ -27,6 +28,8 @@
         <h1>Bienvenido al Juego</h1>
         <button class="btn" id="btnJugador">Jugar</button>
         <button class="btn" id="btnRegistros">Registros</button>
+        <button class="btn" id="btninstr">Instrucciones</button>
+        <!-- <button class="btn" id="btncreditos">Creditos</button> -->
         <button class="btn" id="btnCreditos">Creditos</button>
         <button class="btn" id="btnSalir">Salir</button>
     </div>
@@ -56,6 +59,21 @@
         </table>
         <button class="btn" id="regresarMenuRegistros">Regresar al Menú</button>
     </div>
+
+    <!-- Sección de Instrucciones -->
+<div id="instrucciones" style="display: none;">
+    <h3>Instrucciones</h3>
+    <p>Para jugar solo ocupas jugar con las teclas de atrás y adelante.</p>
+    <button class="btn" id="regresarMenuInstrucciones">Regresar al Menú</button>
+</div>
+
+<!-- Sección de Créditos -->
+<div id="creditos" style="display: none;">
+    <h3>Créditos</h3>
+    <p>Créditos para todos mis compañeros guapos.</p>
+    <button class="btn" id="regresarMenuCreditos">Regresar al Menú</button>
+</div>
+
 
     <div id="gameContainer" style="display: none;"></div>
     <canvas id="creditsCanvas" width="800" height="500" style="display: none;"></canvas>

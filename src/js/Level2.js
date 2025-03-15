@@ -4,6 +4,9 @@ class Level2 extends Level1 {
         this.color = 0xffffff;
         this.textColor = '#ffffff';
         this.playerAlias = verifiedAlias;
+        this.structures = null;
+        this.objStructures = [];
+        this.isAttackingStructure = false;
     }
 
     preload() {
@@ -16,13 +19,14 @@ class Level2 extends Level1 {
         this.load.image('troncos', '../../assets/tiles/troncos.png');
         this.load.image('tumbas', '../../assets/tiles/tumbas.png');
         this.load.image('yunke', '../../assets/tiles/yunke.png');
-        
+
 
     }
 
-    create(data){
+    create(data) {
+        this._createStructures();
         super.create();
-        if(data){
+        if (data) {
             this.hits = data.hits;
             this.score = data.score;
             console.log(`Recibido: Vida = ${this.hits}, Puntuación = ${this.score}`);
@@ -31,10 +35,11 @@ class Level2 extends Level1 {
         }
     }
 
+    
     _cretatePlatforms() {
         this.platforms = this.physics.add.staticGroup();
 
-        
+
         this.platforms.create(50, 250, 'platform').setScale(3).refreshBody();
         this.platforms.create(250, 250, 'platform').setScale(3).refreshBody();
         this.platforms.create(500, 400, 'platform').setScale(3).refreshBody();
@@ -48,63 +53,88 @@ class Level2 extends Level1 {
         this.platforms.create(1900, 200, 'platform').setScale(3).refreshBody();
         this.platforms.create(1950, 350, 'platformw').setScale(3).refreshBody();
         this.platforms.create(1950, 125, 'platformw').setScale(3).refreshBody();
-        
-        
+
+
         this.add.image(140, 222, 'fogata');//+140x +29y
         this.add.image(70, 214, 'blanco').flipX = true;//+70x +21y
         this.add.image(0, 212, 'troncos');//0x +19y
         this.add.image(230, 211, 'tumbas');//+230x +18y
         this.add.image(30, 224, 'yunke');//+30x +31y
-        this.add.image(220, 189, 'spawn');//+220x -4y
+
 
         this.add.image(1540, 555, 'fogata');//+140x
         this.add.image(1470, 547, 'blanco');//+70x
         this.add.image(1400, 545, 'troncos');//0x
         this.add.image(1630, 544, 'tumbas');//+230x
         this.add.image(1430, 557, 'yunke');//+30x
-        this.add.image(1620, 522, 'spawn');//+220x
         
         this.add.image(1370, 152, 'fogata');//+140x
-        this.add.image(1200, 144, 'blanco').flipX=true;//+70x
+        this.add.image(1200, 144, 'blanco').flipX = true;//+70x
         this.add.image(1460, 141, 'tumbas');//+230x
-        this.add.image(1450, 119, 'spawn');//+220x
-
+        
         this.add.image(1800, 560, 'cartel');
-
-    
+        
+        
     }
     _createWorld() {
         // this.add.image(1590, 220, 'forest3');
         // this.add.image(240, 220, 'forest3');
-        this.add.image(551,310,'layer2.1').setScrollFactor(0);
-        this.add.image(1653,310,'layer2.1').setScrollFactor(0);
+        this.add.image(551, 310, 'layer2.1').setScrollFactor(0);
+        this.add.image(1653, 310, 'layer2.1').setScrollFactor(0);
         
-        this.add.image(551,310,'layer2.2').setScrollFactor(0.4);
-        this.add.image(1653,310,'layer2.2').setScrollFactor(0.4);
+        this.add.image(551, 310, 'layer2.2').setScrollFactor(0.4);
+        this.add.image(1653, 310, 'layer2.2').setScrollFactor(0.4);
         
-        this.add.image(551,310,'layer2.3').setScrollFactor(0.8);
-        this.add.image(1653,310,'layer2.3').setScrollFactor(0.8);
+        this.add.image(551, 310, 'layer2.3').setScrollFactor(0.8);
+        this.add.image(1653, 310, 'layer2.3').setScrollFactor(0.8);
         
-        this.add.image(620,300,'layer5').setScrollFactor(0.8);
-        this.add.image(1860,300,'layer5').setScrollFactor(0.8);
+        this.add.image(620, 300, 'layer5').setScrollFactor(0.8);
+        this.add.image(1860, 300, 'layer5').setScrollFactor(0.8);
         
-       
+        
+    }
+    _createStructures() {
+        this.structures = this.physics.add.staticGroup();
+        const img1 =this.add.image(220, 189, 'spawn').setDepth(10);
+        const img2 =this.add.image(1450, 119, 'spawn').setDepth(10);
+        const img3 =this.add.image(1620, 522, 'spawn').setDepth(10);
+        const spawn1 = new Structure(this, 220, 189, this.structures,img1);
+        const spawn2 = new Structure(this, 1450, 119, this.structures,img2);
+        const spawn3 = new Structure(this, 1620, 522, this.structures, img3);
+        this.objStructures.push(spawn1,spawn2,spawn3);
+    }
+
+    _createColliders() {
+        super._createColliders();
+        // Crear la colision con el ataque
+        this.physics.add.overlap(this.player.attacks, this.structures, this._hitStructures, null, this);
+    }
+    _hitStructures(attack, structureSprite) {
+        if (this.isAttackingStructure) return;
+        this.isAttackingStructure = true;
+        console.log(attack);
+        console.log(structureSprite);
+        const structure = this.objStructures.find(child => child.sprite == structureSprite);
+        structure.takeDamage();
+        this.time.delayedCall(1000, () => this.isAttackingStructure = false)
     }
     _createEnemys() {
+
         // Se requiere que sean un grupo de enemys y aparte setear su spawn y puntos de spawn
         this.enemys = this.physics.add.group();
         // Creacion periodica de enemigos cada 3 segundos (cambiar si es necesario):
-        const spawnPoints = [
-            { x: 70, y: 210 },
-            { x: 1197, y: 140 },
-            { x: 1520, y: 535 },
-        ]
+
         this.time.addEvent({
-            delay: 1500,
+            delay: 3000,
             callback: () => {
-                let spw = spawnPoints[Math.floor(Math.random() * 3)];
+                let spawnPoints = []
+                this.structures.children.iterate(child => {
+                    spawnPoints.push({ x: child.x, y: child.y });
+                })
+                if (spawnPoints.length === 0) return;
+                let spw = spawnPoints[Math.floor(Math.random() * spawnPoints.length)];
                 let enemy = new Enemy(this, spw.x, spw.y, this.player);
-                enemy.setSize(36,48);
+                enemy.setSize(36, 48);
                 this.enemys.add(enemy)
             },
             loop: true,
@@ -122,7 +152,7 @@ class Level2 extends Level1 {
         // Crear el texto en la pantalla
         let introText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY,
             'Level 2',
-            { fontFamily:'"Pixelify Sans"', fontSize: '64px', fill: '#ffffff' }
+            { fontFamily: '"Pixelify Sans"', fontSize: '64px', fill: '#ffffff' }
         ).setOrigin(0.5); // Centrar el texto
 
         // Aplicar un tween para desvanecerlo progresivamente
@@ -134,14 +164,14 @@ class Level2 extends Level1 {
             onComplete: () => { introText.destroy(); } // Elimina el texto después de desvanecerse
         });
     }
-    
-    _createCave(){
-        this.add.image(1860,300,'layer6').setScrollFactor(1);
-        this.add.image(620,300,'layer6').setScrollFactor(1);
+
+    _createCave() {
+        this.add.image(1860, 300, 'layer6').setScrollFactor(1);
+        this.add.image(620, 300, 'layer6').setScrollFactor(1);
     }
     
     _checkSwitchLvl(){
-        if(this.score >= 0){
+        if(this.score >= 100 && this.structures.children.entries.length === 0){
             this._win();
         }
     }
