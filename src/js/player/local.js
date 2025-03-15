@@ -67,6 +67,7 @@ document.getElementById("registrarAlias").addEventListener("click", function() {
 
         document.getElementById("aliasInput").value = "";
         document.getElementById("startGame").disabled = false;  // Habilitar el botón de jugar
+        verifiedAlias = alias;
     }
 });
 
