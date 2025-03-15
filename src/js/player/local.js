@@ -124,10 +124,10 @@ document.getElementById("btninstr").addEventListener("click", function() {
 });
 
 // Botón de Créditos
-document.getElementById("btncreditos").addEventListener("click", function() {
-    document.getElementById("menu").style.display = "none";
-    document.getElementById("creditos").style.display = "block";
-});
+// document.getElementById("btncreditos").addEventListener("click", function() {
+//     document.getElementById("menu").style.display = "none";
+//     document.getElementById("creditos").style.display = "block";
+// });
 
 // Regresar desde Instrucciones
 document.getElementById("regresarMenuInstrucciones").addEventListener("click", function() {

@@ -35,6 +35,7 @@ class Level2 extends Level1 {
         }
     }
 
+    
     _cretatePlatforms() {
         this.platforms = this.physics.add.staticGroup();
 
@@ -118,17 +119,19 @@ class Level2 extends Level1 {
         this.time.delayedCall(1000, () => this.isAttackingStructure = false)
     }
     _createEnemys() {
+
         // Se requiere que sean un grupo de enemys y aparte setear su spawn y puntos de spawn
         this.enemys = this.physics.add.group();
         // Creacion periodica de enemigos cada 3 segundos (cambiar si es necesario):
 
         this.time.addEvent({
-            delay: 1500,
+            delay: 3000,
             callback: () => {
                 let spawnPoints = []
                 this.structures.children.iterate(child => {
                     spawnPoints.push({ x: child.x, y: child.y });
                 })
+                if (spawnPoints.length === 0) return;
                 let spw = spawnPoints[Math.floor(Math.random() * spawnPoints.length)];
                 let enemy = new Enemy(this, spw.x, spw.y, this.player);
                 enemy.setSize(36, 48);
@@ -168,7 +171,7 @@ class Level2 extends Level1 {
     }
     
     _checkSwitchLvl(){
-        if(this.score >= 0){
+        if(this.score >= 100 && this.structures.children.entries.length === 0){
             this._win();
         }
     }
