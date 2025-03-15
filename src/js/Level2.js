@@ -13,7 +13,6 @@ class Level2 extends Level1 {
         this.load.image('spawn', '../../assets/tiles/spawn.png');
         this.load.image('blanco', '../../assets/tiles/blanco.png');
         this.load.image('fogata', '../../assets/tiles/fogata.png');
-        this.load.image('suelo', '../../assets/tiles/suelo.png');
         this.load.image('troncos', '../../assets/tiles/troncos.png');
         this.load.image('tumbas', '../../assets/tiles/tumbas.png');
         this.load.image('yunke', '../../assets/tiles/yunke.png');

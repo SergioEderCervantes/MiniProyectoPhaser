@@ -270,6 +270,7 @@ class Level1 extends Phaser.Scene {
         this.physics.add.collider(this.enemys, this.platforms);
         this.playerEnemyCollider = this.physics.add.collider(this.player, this.enemys, this._hitPlayer, null, this);
         this.physics.add.overlap(this.player.attacks, this.enemys, this._hitEnemy, null, this);
+        
     }
 
     _createCursors() {
