@@ -6,6 +6,7 @@ class Enemy extends AbsCharacter {
         this.rightAnim = 'enemy_right';
         this.turnAnim = 'enemy_turn';
         this.attackAnim = 'enemy_attack';
+        this.dashAnim = '';
         Enemy._createAnimations(scene);
         this.playerTarget = playerTarget;
         this.velocityX = 80;

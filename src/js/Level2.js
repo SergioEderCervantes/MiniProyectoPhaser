@@ -13,7 +13,25 @@ class Level2 extends Level1 {
 
     }
 
+    _cretatePlatforms() {
+        this.platforms = this.physics.add.staticGroup();
+        this.platforms.create(600, 400, 'platform').setScale(3).refreshBody();
+        this.platforms.create(800, 400, 'platform').setScale(3).refreshBody();
+        this.platforms.create(50, 250, 'platform').setScale(3).refreshBody();
+        this.platforms.create(750, 220, 'platform').setScale(3).refreshBody();
+        this.platforms.create(150, 450, 'platform').setScale(3).refreshBody();
+        this.platforms.create(1900, 200, 'platform').setScale(3).refreshBody();
+        this.platforms.create(1600, 300, 'platform').setScale(3).refreshBody();
+        this.platforms.create(1200, 100, 'platform').setScale(3).refreshBody();
+        this.platforms.create(1190, 425, 'platform').setScale(3).refreshBody();
+        this.platforms.create(1260, 425, 'platform').setScale(3).refreshBody();
+        this.platforms.create(1926.5, 365, 'platformw').setScale(3).refreshBody();
+        this.platforms.create(1910, 125, 'wall').flipX = true;
+        this.platforms.create(1915, 500, 'rocks');
 
+        this.add.image(1880, 525, 'back');
+    
+    }
     _createWorld() {
         // this.add.image(1590, 220, 'forest3');
         // this.add.image(240, 220, 'forest3');

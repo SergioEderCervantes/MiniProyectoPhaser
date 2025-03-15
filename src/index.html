@@ -9,22 +9,55 @@
     <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <script src="../node_modules/phaser/dist/phaser.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
     <script src="js/player/AbsCharacter.js" defer></script>
     <script src="js/player/Enemy.js" defer></script>
     <script src="js/player/Player.js" defer></script>
     <script src="js/Level1.js" defer></script>
     <script src="js/Level2.js" defer></script>
     <script src="js/main.js" defer></script>
-    <style>
-        body{
-            background-color: #171a29;
-        }
-    </style>
+    <script src="js/player/local.js" defer></script>
 </head>
 
 
 <body>
+    <div id="menu">
+        <h1>Bienvenido al Juego</h1>
+        <button class="btn" id="btnJugador">Jugar</button>
+        <button class="btn" id="btnRegistros">Registros</button>
+        <button class="btn" id="btnSalir">Salir</button>
+    </div>
 
+    <!-- Formulario de registro y botón de jugar -->
+    <div id="registroForm" style="display: none;">
+        <h3>Ingrese un alias:</h3>
+        <input type="text" id="aliasInput" placeholder="Paliti_BB">
+        <br>
+        <button class="btn" id="registrarAlias">Registrar Alias</button>
+        <button class="btn" id="startGame" disabled>Jugar</button> <!-- Inicialmente deshabilitado -->
+        <button class="btn" id="regresarMenu">Regresar al Menú</button>
+    </div>
+
+    <!-- Tabla de registros de jugadores -->
+    <div id="tablaRegistros" style="display: none;">
+        <h3>Registros de Jugadores</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Alias</th>
+                    <th>Puntos</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody id="tablaBody"></tbody>
+        </table>
+        <button class="btn" id="regresarMenuRegistros">Regresar al Menú</button>
+    </div>
+
+    <div id="gameContainer" style="display: none;"></div>
 </body>
 
 </html>
+
+

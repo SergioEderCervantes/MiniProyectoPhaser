@@ -7,6 +7,7 @@ class Player extends AbsCharacter {
         this.turnAnim = 'turn';
         this.attackAnim = 'attack';
         this.dashAnim = 'dash';
+        this.dieAnim = 'die';
         this.isAttacking = false;
         this.attacks = this.scene.physics.add.group();
         this.attackDir = '';
@@ -99,6 +100,12 @@ class Player extends AbsCharacter {
             frameRate: 10,
             repeat: 0,
         });
+        this.scene.anims.create({
+            key: this.dieAnim,
+            frames: this.scene.anims.generateFrameNumbers(this.dieAnim, { start: 0, end: 9 }),
+            frameRate: 10,
+            repeat: 0,
+        });
 
         
 
@@ -138,18 +145,22 @@ class Player extends AbsCharacter {
             child.setVelocityY(this.body.velocity.y);
         });
     }
-
+    death(){
+        this.anims.play(this.dieAnim, true);
+    }
 
     _attack(direction) {
         if (this.isAttacking) return;
         this.isAttacking = true;
         if (direction === 'left') {
-            this.setVelocityX(-30);
+            this.setVelocityX(-50);
         }
-        else if(direction === 'right') {
-            this.setVelocityX(30);
+        else  {
+            this.setVelocityX(50);
+            
         }
-
+        console.log(this.x);
+        console.log(this.y);
 
         this.anims.play(this.attackAnim, true);
 

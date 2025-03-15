@@ -18,6 +18,7 @@ class AbsCharacter extends Phaser.Physics.Arcade.Sprite{
         this.rightAnim = "";
         this.turnAnim = "";
         this.attackAnim = "";
+        this.dashAnim = "";
 
     }
 
