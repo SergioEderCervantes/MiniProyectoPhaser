@@ -25,6 +25,7 @@ class Level1 extends Phaser.Scene {
         this.timerText = null;
         this.isTimerActive = false;
         this.dateText = null;
+        this.playerType = playerType;
     }
 
 
@@ -49,7 +50,27 @@ class Level1 extends Phaser.Scene {
         this.load.image('rocks', '../../assets/rocks.png')
         this.load.image('heart', '../../assets/Corazonlleno.png');
         this.load.image('emptyHeart', '../../assets/CorazonVacio.png');
-        this.load.image('heartObj', '../../assets/objetcs/heartObj.png');this.load.image('cartel', '../../assets/tiles/cartel.png')
+        this.load.image('heartObj', '../../assets/objetcs/heartObj.png');
+        this.load.image('cartel', '../../assets/tiles/cartel.png')
+        if(this.playerType == 1){
+            this._loadPlayer1();
+        } else {
+            this._loadPlayer2();
+        }
+        this._loadEnemy();
+        
+        
+        this.load.audio('game', '../../assets/music/game.ogg');
+        this.load.audio('win', '../../assets/music/win.mp3');
+        this.load.audio('next', '../../assets/music/next.mp3');
+        this.load.audio('menu', '../../assets/music/menu.mp3');
+        this.load.audio('lose', '../../assets/music/lose.wav');
+        this.load.audio('coin', '../../assets/music/coin.mp3');
+        this.load.audio('special', '../../assets/music/special_item.mp3');
+
+    }
+
+    _loadPlayer1(){
         this.load.spritesheet('idle',
             '../../assets/player/_Idle.png',
             { frameWidth: 120, frameHeight: 80 }
@@ -70,6 +91,32 @@ class Level1 extends Phaser.Scene {
             '../../assets/player/_Run.png',
             { frameWidth: 120, frameHeight: 80 }
         );
+    }
+    _loadPlayer2(){
+        // TODO 
+        this.load.spritesheet('idle',
+            '../../assets/player2/_Idle.png',
+            { frameWidth: 120, frameHeight: 80 }
+        );
+        this.load.spritesheet('die',
+            '../../assets/player2/_Death.png',
+            { frameWidth: 120, frameHeight: 80 }
+        );
+        this.load.spritesheet('attack',
+            '../../assets/player2/_Attack.png',
+            { frameWidth: 120, frameHeight: 80 }
+        );
+        this.load.spritesheet('dash',
+            '../../assets/player2/_Dash.png',
+            { frameWidth: 120, frameHeight: 80 }
+        );
+        this.load.spritesheet('run',
+            '../../assets/player2/_Run.png',
+            { frameWidth: 120, frameHeight: 80 }
+        );
+    }
+
+    _loadEnemy(){
         this.load.spritesheet('enemy',
             '../../assets/enemy.png',
             { frameWidth: 32, frameHeight: 48 }
@@ -93,15 +140,6 @@ class Level1 extends Phaser.Scene {
         this.load.spritesheet('gem', '../../assets/objetcs/gemSprite.png',
             { frameWidth: 23, frameHeight: 27 }
         );
-
-        this.load.audio('game', '../../assets/music/game.ogg');
-        this.load.audio('win', '../../assets/music/win.mp3');
-        this.load.audio('next', '../../assets/music/next.mp3');
-        this.load.audio('menu', '../../assets/music/menu.mp3');
-        this.load.audio('lose', '../../assets/music/lose.wav');
-        this.load.audio('coin', '../../assets/music/coin.mp3');
-        this.load.audio('special', '../../assets/music/special_item.mp3');
-
     }
     // Metodo que se llama cuando se crea la escena y la renderiza
     create() {
@@ -486,7 +524,7 @@ class Level1 extends Phaser.Scene {
         // Capa de sombra que cubre toda la pantalla
         const sombra = this.add.rectangle(
             mainCamara.scrollX + this.scale.width / 2,
-            mainCamara.scrollY + this.scale.height / 2,
+            mainCamara.scrollY + this.scale.height /2,
             this.scale.width, this.scale.height,
             0x000000, 0.8
         ).setOrigin(0.5);
@@ -520,62 +558,98 @@ class Level1 extends Phaser.Scene {
 
     }
 
-    // Menu para el game Over
     _createMenuGO() {
         const mainCamara = this.cameras.main;
+        const { width, height } = this.scale; 
+    
+        const sombra = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.7);
         const dispCentX = window.innerWidth / 2 + mainCamara.scrollX;
         const dispCentY = window.innerHeight / 2 + mainCamara.scrollY;
-        // Capa de sombra que cubre toda la pantalla
-        const sombra = this.add.rectangle(
-            mainCamara.scrollX + this.scale.width / 2,
-            mainCamara.scrollY + this.scale.height / 2,
-            this.scale.width, this.scale.height,
-            0x000000, 0.8
-        ).setOrigin(0.5);
-        const textStyle = { fontSize: '32px', fill: "#fff" };
-
-        // UI elements
-        const title = this.add.text(dispCentX - 70, dispCentY - 200, "Game Over", textStyle);
-        const text = this.add.text(dispCentX - 110, dispCentY - 116, "Back 2 Menu", textStyle);
-        const btn = this.add.rectangle(dispCentX, dispCentY - 100, text.width + 70, 40, 0x343a40).setInteractive();
-        // Contenedor
-        this.menuContainer = this.add.container(0, 0, [sombra, title, btn, text])
-        this._addHoverEffect(btn);
-
-        sombra.setDepth(0);
-        this.menuContainer.setDepth(1);
-
-        btn.on('pointerdown', () => location.reload());
+        const title = this.add.text(width / 2, height * 0.35, "GAME OVER", {
+            fontSize: "80px",
+            fontFamily: '"Pixelify Sans"',
+            fill: "#ff4d4d",
+            fontWeight: "bold",
+            stroke: "#000",
+            strokeThickness: 8,
+            align: "center"
+        }).setPosition(dispCentX, dispCentY -200).setOrigin(0.5);
+    
+        const subText = this.add.text(width / 2, height * 0.45, "¡Inténtalo de nuevo!", {
+            fontSize: "30px",
+            fontFamily: '"Pixelify Sans"',
+            fill: "#ffffff"
+        }).setOrigin( 0.5).setPosition(dispCentX, dispCentY - 75);
+    
+        const btn = this.add.rectangle(width / 2, height * 0.65, 220, 60, 0xff4d4d, 1)
+            .setStrokeStyle(5, 0xffffff)
+            .setInteractive().setOrigin(0.5).setPosition(dispCentX, dispCentY + 50);
+    
+        const btnText = this.add.text(width / 2, height * 0.65, "Reintentar", {
+            fontSize: "28px",
+            fontFamily: '"Pixelify Sans"',
+            fill: "#ffffff",
+            fontWeight: "bold"
+        }).setOrigin(0.5).setPosition(dispCentX, dispCentY + 50);
+    
+        btn.on("pointerover", () => btn.setFillStyle(0xcc0000));
+        btn.on("pointerout", () => btn.setFillStyle(0xff4d4d));
+    
+        btn.on("pointerdown", () => location.reload());
+    
+        this.menuContainer = this.add.container(0, 0, [sombra, title, subText, btn, btnText]);
+    
+        sombra.setDepth(2);
+        this.menuContainer.setDepth(3);
     }
+    
 
-    _createWinMenu(){
-        // Como esta ya es la pantalla final, podemos agregar algo mas padre, tmb en el menu de derrota
+    _createWinMenu() {
         const mainCamara = this.cameras.main;
+        const { width, height } = this.scale;
+    
+        const sombra = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.7);
         const dispCentX = window.innerWidth / 2 + mainCamara.scrollX;
         const dispCentY = window.innerHeight / 2 + mainCamara.scrollY;
-
-        // Capa de sombra que cubre toda la pantalla
-        const sombra = this.add.rectangle(
-            mainCamara.scrollX + this.scale.width / 2,
-            mainCamara.scrollY + this.scale.height / 2,
-            this.scale.width, this.scale.height,
-            0x000000, 0.8
-        ).setOrigin(0.5);
-        const textStyle = { fontSize: '32px', fill: "#fff" };
-
-        // UI elements
-        const title = this.add.text(dispCentX - 150, dispCentY - 200, "Felicidades!! Has ganado", textStyle);
-        const text = this.add.text(dispCentX - 150, dispCentY - 100, "Back 2 Menu", textStyle);
-        const btn = this.add.rectangle(dispCentX, dispCentY - 100, text.width + 70, 40, 0x6666ff).setInteractive();;
-        // Contenedor
-        this.menuContainer = this.add.container(0, 0, [sombra, title, btn, text])
-        this._addHoverEffect(btn);
-
-        sombra.setDepth(0);
-        this.menuContainer.setDepth(1);
-
-        btn.on('pointerdown', () => location.reload());
+    
+        const title = this.add.text(width / 2, height * 0.35, "¡FELICIDADES!", {
+            fontSize: "75px",
+            fontFamily: '"Pixelify Sans"',
+            fill: "#ffd700", 
+            fontWeight: "bold",
+            stroke: "#000",
+            strokeThickness: 8,
+            align: "center"
+        }).setPosition(dispCentX, dispCentY - 200).setOrigin(0.5);
+    
+        const subText = this.add.text(width / 2, height * 0.45, "¡Has completado el nivel!", {
+            fontSize: "32px",
+            fontFamily: '"Pixelify Sans"',
+            fill: "#ffffff"
+        }).setOrigin(0.5).setPosition(dispCentX, dispCentY - 75);
+    
+        const btn = this.add.rectangle(width / 2, height * 0.65, 220, 60, 0x32cd32, 1) 
+            .setStrokeStyle(5, 0xffffff)
+            .setInteractive().setOrigin(0.5).setPosition(dispCentX, dispCentY + 50);
+    
+        const btnText = this.add.text(width / 2, height * 0.65, "Continuar", {
+            fontSize: "28px",
+            fontFamily: '"Pixelify Sans"',
+            fill: "#ffffff",
+            fontWeight: "bold"
+        }).setOrigin(0.5).setPosition(dispCentX, dispCentY + 50);
+    
+        btn.on("pointerover", () => btn.setFillStyle(0x228b22)); 
+        btn.on("pointerout", () => btn.setFillStyle(0x32cd32)); 
+    
+        btn.on("pointerdown", () => location.reload());
+    
+        this.menuContainer = this.add.container(0, 0, [sombra, title, subText, btn, btnText]);
+    
+        sombra.setDepth(2);
+        this.menuContainer.setDepth(3);
     }
+    
 
     // Estoy pensandolo para que esta funcion mate a todos los menus, si el create no se puede al menos el destroy
     _closeMenu() {
@@ -628,12 +702,12 @@ class Level1 extends Phaser.Scene {
             setXY: { x: window.innerWidth - 120, y: 60, stepX: 30 }
         });
 
-        // Hacer que nada se mueva a pesar del scroll
+       
         this.cooldownBar.setScrollFactor(0);
         this.scoreText.setScrollFactor(0);
         this.heartDisplay.children.iterate(child => child.setScrollFactor(0));
 
-        // Timer de las gemas
+        
         this.timerText = this.add.text(window.innerWidth / 2 - 200, 50, "", {
             fontFamily: '"Pixelify Sans"',
             fontSize: '20px',
@@ -642,13 +716,13 @@ class Level1 extends Phaser.Scene {
 
         this.timer = 10.00
         this.time.addEvent({
-            delay: 10, // Actualiza cada 10 ms para mostrar milisegundos
+            delay: 10, 
             callback: this._updateTimer,
             callbackScope: this,
             loop: true
         });
 
-        // Fecha
+        
         const date = new Date().toLocaleDateString();
         this.dateText = this.add.text(250,16,  date,fontStyle).setScrollFactor(0);
     }
@@ -661,17 +735,17 @@ class Level1 extends Phaser.Scene {
 
     updateHearts() {
         let hearts = this.heartDisplay.getChildren();
-        let maxLives = 3; // Número máximo de corazones
+        let maxLives = 3; 
 
 
         let filledHearts = maxLives - this.hits;
 
         hearts.forEach((heart, index) => {
             if (index < filledHearts) {
-                heart.setTexture('heart'); // Corazón lleno
+                heart.setTexture('heart'); 
                 heart.setAlpha(1);
             } else {
-                heart.setTexture('emptyHeart'); // Corazón vacío
+                heart.setTexture('emptyHeart'); 
                 this.tweens.add({
                     targets: heart,
                     alpha: 0,
@@ -685,16 +759,16 @@ class Level1 extends Phaser.Scene {
     startTimer() {
         this.timer = 10.00;
         this.isTimerActive = true;
-        this.timerText.setAlpha(1); // Mostrar el texto
+        this.timerText.setAlpha(1);
     }
     _updateTimer() {
         if (!this.isTimerActive) return
-        this.timer -= 0.01; // Reducir tiempo
+        this.timer -= 0.01; 
 
         if (this.timer <= 0) {
             this.timer = 10.00;
             this.isTimerActive = false;
-            this.timerText.setAlpha(0); // Ocultar el texto
+            this.timerText.setAlpha(0); 
         } else {
             this.timerText.setText(`Ha aparecido una gema! desaparecerá en: ${this.timer.toFixed(2)}`);
         }
@@ -702,6 +776,7 @@ class Level1 extends Phaser.Scene {
 }
 
 function startGame() {
+    
     var config = {
         type: Phaser.AUTO,
         width: 2200,
