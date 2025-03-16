@@ -346,7 +346,15 @@ class Level1 extends Phaser.Scene {
     collectGem(player, gem) {
         gem.onCollect();
         this.specialItemSound.play();
-
+        if (this.score >= this.nextLvlThreshold && this.scene.key === 'Level1') {
+            this.tweens.add({
+            targets: this.nextLvl,
+            alpha: { from: 1, to: 0 },
+            duration: 500,
+            yoyo: true,
+            repeat: -1,
+            });
+        }
     }
 
     _createColliders() {
