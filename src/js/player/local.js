@@ -1,5 +1,10 @@
 var verifiedAlias;
-
+window.onload = function () {
+    menuMusic = new Audio('../../assets/music/menu.mp3');
+    menuMusic.loop = true;
+    menuMusic.volume = 0.5;
+    menuMusic.play();
+};
 document.getElementById("btnJugador").addEventListener("click", function () {
     document.getElementById("menu").style.display = "none";
     document.getElementById("registroForm").style.display = "block";
@@ -126,7 +131,6 @@ document.getElementById("btninstr").addEventListener("click", function() {
 // Botón de Créditos
 // document.getElementById("btncreditos").addEventListener("click", function() {
 //     document.getElementById("menu").style.display = "none";
-//     document.getElementById("creditos").style.display = "block";
 // });
 
 // Regresar desde Instrucciones
@@ -165,7 +169,8 @@ document.getElementById("btnCreditos").addEventListener("click", function () {
     document.getElementById("menu").style.display = "none";
     document.getElementById("tablaRegistros").style.display = "none";
     document.getElementById("registroForm").style.display = "none";
-    
+    document.getElementById("creditos").style.display = "block";
+
     const canvas = document.getElementById('creditsCanvas');
     canvas.style.display = "block";
 
@@ -186,8 +191,8 @@ document.getElementById("btnCreditos").addEventListener("click", function () {
 
     function drawCredits() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "black";
-        ctx.font = "30px Arial";
+        ctx.fillStyle = "white";
+        ctx.font = "30px Pixelify Sans";
         ctx.textAlign = "center";
 
         positions.forEach((y, i) => {
