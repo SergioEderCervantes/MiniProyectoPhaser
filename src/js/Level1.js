@@ -27,7 +27,7 @@ class Level1 extends Phaser.Scene {
         this.dateText = null;
         this.playerType = playerType;
         this.nextLvl = null
-        this.nextLvlThreshold = 10;
+        this.nextLvlThreshold = 500;
     }
 
 
@@ -516,7 +516,7 @@ class Level1 extends Phaser.Scene {
     }
 
     _checkSwitchLvl() {
-        if (this.score >= 10 && this.player.x >= 1950) {
+        if (this.score >= this.nextLvlThreshold && this.player.x >= 1950) {
             this.physics.pause();
             this.time.removeAllEvents();
             this.cameras.main.fade(2000, 0, 0, 0);
