@@ -540,44 +540,67 @@ class Level1 extends Phaser.Scene {
     // Creacion de Menus y UI
     _createMenuPause() {
         const mainCamara = this.cameras.main;
+        const { width, height } = this.scale;
+    
+        const sombra = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.8);
+    
         const dispCentX = window.innerWidth / 2 + mainCamara.scrollX;
         const dispCentY = window.innerHeight / 2 + mainCamara.scrollY;
-        // Capa de sombra que cubre toda la pantalla
-        const sombra = this.add.rectangle(
-            mainCamara.scrollX + this.scale.width / 2,
-            mainCamara.scrollY + this.scale.height /2,
-            this.scale.width, this.scale.height,
-            0x000000, 0.8
-        ).setOrigin(0.5);
-
-
-        // Crea el grupo de la UI y lo llena:
-        const textStyle = { fontSize: '32px', fill: "#fff" };
-        const text1 = this.add.text(dispCentX - 55, dispCentY - 300, "Paused", textStyle);
-        const text2 = this.add.text(dispCentX - 55, dispCentY - 116, "Resume", textStyle);
-        const text3 = this.add.text(dispCentX - 110, dispCentY + 85, "Back 2 Menu", textStyle);
-        const btn1 = this.add.rectangle(dispCentX, dispCentY - 100, text2.width + 70, 40, 0x343a40).setInteractive();
-        const btn2 = this.add.rectangle(dispCentX, dispCentY + 100, text3.width + 70, 40, 0x343a40).setInteractive();
-        
-        // Contenedor
-        this.menuContainer = this.add.container(0, 0, [sombra, btn1, btn2, text1, text2, text3])
-        this._addHoverEffect(btn1);
-        this._addHoverEffect(btn2);
-
-        sombra.setDepth(0);
-        this.menuContainer.setDepth(1);
-
-
-        btn1.on('pointerdown', () => {
-            this._handlePause();
-        });
-
-        btn2.on('pointerdown', () => {
-            console.log('Reiniciando la escena');
-            location.reload();
-        });
-
+    
+        // Texto "PAUSED" grande y llamativo
+        const title = this.add.text(dispCentX, dispCentY - 150, "PAUSED", {
+            fontSize: "80px",
+            fontFamily: '"Pixelify Sans"',
+            fill: "#ffffff",
+            fontWeight: "bold",
+            stroke: "#000",
+            strokeThickness: 8,
+            align: "center"
+        }).setOrigin(0.5);
+    
+        // Botón "Resume" (Gris oscuro)
+        const btnResume = this.add.rectangle(dispCentX, dispCentY, 220, 60, 0x555555, 1) // Gris oscuro
+            .setStrokeStyle(5, 0xffffff)
+            .setInteractive();
+        const btnResumeText = this.add.text(dispCentX, dispCentY, "Reanudar", {
+            fontSize: "28px",
+            fontFamily: '"Pixelify Sans"',
+            fill: "#ffffff",
+            fontWeight: "bold"
+        }).setOrigin(0.5);
+    
+        // Botón "Back to Menu" (Gris oscuro)
+        const btnMenu = this.add.rectangle(dispCentX, dispCentY + 100, 220, 60, 0x555555, 1) // Gris oscuro
+            .setStrokeStyle(5, 0xffffff)
+            .setInteractive();
+        const btnMenuText = this.add.text(dispCentX, dispCentY + 100, "Menú Principal", {
+            fontSize: "28px",
+            fontFamily: '"Pixelify Sans"',
+            fill: "#ffffff",
+            fontWeight: "bold"
+        }).setOrigin(0.5);
+    
+        // Efecto de hover en los botones (gris más claro)
+        btnResume.on("pointerover", () => btnResume.setFillStyle(0x777777)); // Gris claro
+        btnResume.on("pointerout", () => btnResume.setFillStyle(0x555555)); // Regresa a gris oscuro
+    
+        btnMenu.on("pointerover", () => btnMenu.setFillStyle(0x777777)); // Gris claro
+        btnMenu.on("pointerout", () => btnMenu.setFillStyle(0x555555)); // Regresa a gris oscuro
+    
+        // Acción del botón "Resume" (reanudar el juego)
+        btnResume.on("pointerdown", () => this._handlePause());
+    
+        // Acción del botón "Back to Menu" (reiniciar el juego)
+        btnMenu.on("pointerdown", () => location.reload());
+    
+        // Agrupar elementos en un contenedor
+        this.menuContainer = this.add.container(0, 0, [sombra, title, btnResume, btnResumeText, btnMenu, btnMenuText]);
+    
+        // Ajustamos profundidad para que todo quede visible
+        sombra.setDepth(2);
+        this.menuContainer.setDepth(3);
     }
+    
 
     _createMenuGO() {
         const mainCamara = this.cameras.main;
