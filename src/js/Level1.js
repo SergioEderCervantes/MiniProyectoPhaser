@@ -26,6 +26,8 @@ class Level1 extends Phaser.Scene {
         this.isTimerActive = false;
         this.dateText = null;
         this.playerType = playerType;
+        this.nextLvl = null
+        this.nextLvlThreshold = 10;
     }
 
 
@@ -401,8 +403,16 @@ class Level1 extends Phaser.Scene {
         this.score += 10;
         this.scoreText.setText('Score: ' + this.score);
         star.destroy();
-
         this.itemSound.play();
+        if (this.score >= this.nextLvlThreshold && this.scene.key === 'Level1') {
+            this.tweens.add({
+            targets: this.nextLvl,
+            alpha: { from: 1, to: 0 },
+            duration: 500,
+            yoyo: true,
+            repeat: -1,
+            });
+        }
     }
 
     _activateInvincibility(player) {
@@ -460,6 +470,7 @@ class Level1 extends Phaser.Scene {
     }
 
     _win() {
+        saveScore(this.playerAlias,this.score);
         this.physics.pause();
         this.time.removeAllEvents();
         this.gameOver = true;
@@ -469,6 +480,8 @@ class Level1 extends Phaser.Scene {
         
     }
     _onGameOver() {
+        // Sacar la puntuacion y guardarla en el localStorage
+        saveScore(this.playerAlias, this.score);
         this.player.death();
         
         this.physics.pause();
@@ -624,14 +637,6 @@ class Level1 extends Phaser.Scene {
     }
 
     _addHoverEffect(button) {
-        button.on('pointerover', () => {
-            button.setTint(0xbbbbbb); 
-        });
-    
-        button.on('pointerout', () => {
-            button.clearTint(); 
-        });
-    
         button.on('pointerdown', () => {
             button.setScale(0.95); 
         });
@@ -689,6 +694,11 @@ class Level1 extends Phaser.Scene {
         // Fecha
         const date = new Date().toLocaleDateString();
         this.dateText = this.add.text(250,16,  date,fontStyle).setScrollFactor(0);
+
+        // Pasa al siguiente nivel
+        this.nextLvl = this.add.text(window.innerWidth / 2 - 200, 100, "Avanza al siguiente nivel ->>", fontStyle)
+        .setAlpha(0)
+        .setScrollFactor(0);
     }
     _updateDashCooldownUI() {
         let progress = this.player.getDashCooldwnProg();
@@ -758,3 +768,20 @@ function startGame() {
 }
 
 window.startGame = startGame
+function saveScore(alias, score){
+    console.log(alias);
+    console.log(score);
+    const registro = JSON.parse(localStorage.getItem(alias));
+    if (registro !== null){
+        console.log(registro.alias);
+        console.log(registro.puntuacion);
+        console.log(registro.fecha);
+        if (registro.puntuacion <= score){
+            registro.puntuacion = score;
+            registro.fecha = new Date().toLocaleDateString();
+            localStorage.setItem(alias, JSON.stringify(registro));
+        }
+    }else{
+        console.log("no pudo capturar el registro")
+    }
+}

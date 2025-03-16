@@ -48,9 +48,6 @@ function verifyAlias(alias) {
         };
         localStorage.setItem(alias, JSON.stringify(jugador));  // Guardar el jugador en localStorage
 
-        // Guardar el alias como texto
-        localStorage.setItem('verifiedAlias', alias);  // Guardamos solo el alias como texto
-
         Swal.fire({
             icon: "success",
             title: "Registro exitoso",

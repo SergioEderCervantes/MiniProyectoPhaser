@@ -42,7 +42,7 @@ document.getElementById("btnRegistros").addEventListener("click", function () {
         try {
             let jugador = JSON.parse(data); // Convertir a objeto JSON
             if (jugador && jugador.puntuacion !== undefined) {
-                jugadores.push(jugador);  // Asegúrate de agregar a los jugadores con puntaje
+                jugadores.push(jugador);  
             }
         } catch (error) {
             console.error(`Error al leer alias: ${alias}`, error);
