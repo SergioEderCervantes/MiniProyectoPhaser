@@ -95,9 +95,9 @@ class Level2 extends Level1 {
     }
     _createStructures() {
         this.structures = this.physics.add.staticGroup();
-        const img1 =this.add.image(220, 189, 'spawn').setDepth(10);
-        const img2 =this.add.image(1450, 119, 'spawn').setDepth(10);
-        const img3 =this.add.image(1620, 522, 'spawn').setDepth(10);
+        const img1 =this.add.image(220, 189, 'spawn').setDepth(1);
+        const img2 =this.add.image(1450, 119, 'spawn').setDepth(1);
+        const img3 =this.add.image(1620, 522, 'spawn').setDepth(1);
         const spawn1 = new Structure(this, 220, 189, this.structures,img1);
         const spawn2 = new Structure(this, 1450, 119, this.structures,img2);
         const spawn3 = new Structure(this, 1620, 522, this.structures, img3);
@@ -166,12 +166,12 @@ class Level2 extends Level1 {
     }
 
     _createCave() {
-        this.add.image(1860, 300, 'layer6').setScrollFactor(1);
-        this.add.image(620, 300, 'layer6').setScrollFactor(1);
+        this.add.image(1860, 305, 'layer6').setScrollFactor(1);
+        this.add.image(620, 305, 'layer6').setScrollFactor(1);
     }
     
     _checkSwitchLvl(){
-        if(this.score >= 100 && this.structures.children.entries.length === 0){
+        if(this.structures.children.entries.length === 0){
             this._win();
         }
     }

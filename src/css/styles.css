@@ -1,10 +1,10 @@
 :root {
-    --primary-bg: #171a29;
+    --primary-bg: url('../../assets/bkg.webp');
+    filter: saturate(75%);
     --primary-text: white;
     --primary-font: 'Pixelify Sans', sans-serif;
-    --button-bg: #c2370d;
-    --button-hover-bg: #e64a19;
-    --button-text: white;
+    --button-hover-bg: #000000c5;
+    --button-text: whitrgba(23, 23, 23, 0.816)
     --button-padding: 15px 30px;
     --button-font-size: 20px;
     --form-input-width: 250px;
@@ -14,15 +14,25 @@
 
 }
 
+.logo{
+    position: absolute;
+    top:-110px;
+    width: 400px;;
+    z-index: -1;
+}
 body {
-    background-color: var(--primary-bg);
+    background: var(--primary-bg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
     font-family: var(--primary-font);
     color: var(--primary-text);
     text-align: center;
-    /* overflow: hidden; */
     margin: 0;
-    /* display: grid; */
-    /* align-items: center; */
+    min-height: 90vh;
+    overflow-x: hidden;
+
+   
 }
 
 #menu {
@@ -33,11 +43,7 @@ body {
     height: 100vh;
     gap: 20px;
 
-        /* Imagen de fondo */
-        background-image: url('../assets/fondosnayomis/li.jpg'); /* Cambia 'img/fondo.jpg' por la ruta real de tu imagen */
-        background-size: cover; /* Ajusta la imagen para cubrir todo el fondo */
-        background-position: center; /* Centra la imagen */
-        background-repeat: no-repeat; /* Evita que la imagen se repita */
+ 
 }
 
 h1 {
@@ -46,22 +52,24 @@ h1 {
 }
 
 button {
-    width: 200px; /* Ajusta según el tamaño deseado */
-    height: 60px; /* Ajusta según el tamaño deseado */
-    padding: 10px; /* Puede ser menor si defines height */
+    width: 100%; 
+    height: 60px; 
+    padding: 10px; 
     font-size: 20px;
-    background-color: #c2370d;
+    background-color: #c2370d00;
+    font-family: var(--primary-font);
+    font-size: 32px;
     border: none;
     color: var(--button-text);
     cursor: pointer;
     transition: 0.3s;
-    margin: 20px;
-    border-radius: 30px; /* Hace que las esquinas sean redondeadas */
+    margin: 10px;
     text-align: center;
 }
 
 button:hover {
     background-color: var(--button-hover-bg);
+    content: var(--button-hover-bg);
 }
 
 table {
@@ -70,15 +78,59 @@ table {
     border-collapse: collapse;
 }
 
+#registroForm {
+    text-align: center;
+}
+
+#registroForm h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+#aliasInput {
+    font-family: var(--primary-font); 
+    font-size: var(--form-font-size);
+    padding: var(--form-input-padding);
+    width: var(--form-input-width);
+    border: 2px solid var(--primary-text);
+    border-radius: var(--form-input-radius);
+    background-color: transparent;
+    color: var(--primary-text);
+}
+
+#aliasInput::placeholder {
+    font-family: var(--primary-font); 
+    color: var(--primary-text); 
+    opacity: 0.8; 
+}
+#registroForm button {
+    font-size: var(--form-font-size);
+    padding: 10px 20px;
+    margin-top: 10px;
+    border-radius: var(--form-input-radius);
+}
+
+#registroForm {
+    text-align: center; 
+}
+
+#tablaRegistros{
+    font-size: 22px;
+}
+.tabla-container {
+    max-height: 300px; 
+    overflow-y: auto;
+    scrollbar-color: transparent transparent; 
+    scrollbar-width: thin; 
+}
 #instrucciones, #creditos {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    font-size: 22px;
 }
 .playerContainer{
-    /* background-color: white; */
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: 200px 200px;
@@ -124,7 +176,7 @@ table {
 
 @keyframes animarSprite {
     from { background-position: 0 bottom; }
-    to { background-position: -1200px bottom; } /* Mueve toda la spritesheet */
+    to { background-position: -1200px bottom; } 
 }
 
 #playBtn{
@@ -132,7 +184,7 @@ table {
     grid-column: 5;
     align-self: end;
 
-    /* background-color: white; */
+
 }
 
 #playBtn:disabled{
@@ -148,12 +200,16 @@ table {
     margin-bottom: 30px;
 }
 #aliasInput{
-    font-size: var(--form-font-size);
+    font-size: var(--primary-font);
     padding: var(--form-input-padding);
     width: var(--form-input-width);
     border-radius: var(--form-input-radius);
+    background-color: transparent;
+    color: var(--primary-text);
+
 }
 #regresarMenu{
+    min-height: 100px;
     grid-row: 3;
     grid-column: 3;
 }

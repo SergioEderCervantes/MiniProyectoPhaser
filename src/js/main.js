@@ -11,7 +11,7 @@ if(mainBtn){
             document.getElementById("menu").style.display = "none";
             document.getElementById("seleccionarJugador").style.display = "none";  
             document.querySelector("body").style.overflow = "hidden";  
-
+            menuMusic.pause();
             window.startGame();
         } else{
             mainBtn.disabled = true;
